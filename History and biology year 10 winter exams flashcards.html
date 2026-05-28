@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCSE Flashcards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+            background: linear-gradient(to bottom right, #f3f4f6, #dbeafe, #e0e7ff);
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 56rem;
+            margin: 0 auto;
+        }
+
+        /* Menu Screen */
+        .menu-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .menu-content {
+            width: 100%;
+            max-width: 42rem;
+        }
+
+        .menu-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .menu-header h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .menu-header p {
+            font-size: 1.25rem;
+            color: #4b5563;
+        }
+
+        .subject-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .subject-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            border: none;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        .subject-card:hover {
+            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+            transform: scale(1.05);
+        }
+
+        .card-icon-box {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-icon-box.history {
+            background-color: #dbeafe;
+        }
+
+        .card-icon-box.biology {
+            background-color: #dcfce7;
+        }
+
+        .card-icon {
+            width: 2rem;
+            height: 2rem;
+        }
+
+        .subject-card h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .subject-card p {
+            color: #4b5563;
+            margin-bottom: 1rem;
+        }
+
+        .card-stats {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .card-stats p {
+            margin: 0.25rem 0;
+        }
+
+        /* Study Screen */
+        .study-screen {
+            display: none;
+        }
+
+        .study-screen.active {
+            display: block;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: white;
+            border: none;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            font-weight: 500;
+            transition: box-shadow 0.2s;
+        }
+
+        .btn-menu:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-title {
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex: 1;
+        }
+
+        .header-title h1 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        .header-spacer {
+            width: 6rem;
+        }
+
+        /* Controls */
+        .controls {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .controls-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .topic-select {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .topic-select label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .topic-select select {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .topic-select select:focus {
+            ring: 2px;
+            ring-color: #3b82f6;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-shuffle {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-shuffle.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-reset {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-reset:hover {
+            background: #d1d5db;
+        }
+
+        /* Progress */
+        .progress-section {
+            margin-top: 1rem;
+        }
+
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.875rem;
+            color: #4b5563;
+            margin-bottom: 0.25rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 0.5rem;
+            background: #e5e7eb;
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #2563eb;
+            transition: width 0.3s ease;
+        }
+
+        /* Flashcard */
+        .flashcard-container {
+            perspective: 1000px;
+            margin-bottom: 1.5rem;
+        }
+
+        .flashcard {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.5s;
+            transform-style: preserve-3d;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        .flashcard-front {
+            background: white;
+            border-radius: 0.75rem;
+        }
+
+        .flashcard-back {
+            background: #f0f4ff;
+            border-radius: 0.75rem;
+            transform: rotateY(180deg);
+        }
+
+        .topic-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            width: fit-content;
+        }
+
+        .topic-badge.history {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .topic-badge.biology {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .flashcard h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .flashcard p {
+            font-size: 1.125rem;
+            color: #374151;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            flex: 1;
+        }
+
+        .flashcard-hint {
+            text-align: center;
+            color: #9ca3af;
+            font-size: 0.875rem;
+        }
+
+        /* Navigation */
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn-nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: white;
+            color: #374151;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-nav:hover:not(:disabled) {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-nav:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-mastered {
+            padding: 0.75rem 1.5rem;
+            background: #16a34a;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-mastered:hover {
+            background: #15803d;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Tips */
+        .tips-section {
+            margin-top: 2rem;
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+
+        .tips-section h3 {
+            font-size: 1.125rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 0.75rem;
+        }
+
+        .tips-section ul {
+            list-style: none;
+            space-y: 0.5rem;
+        }
+
+        .tips-section li {
+            font-size: 0.875rem;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .tips-section strong {
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .subject-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .header-spacer {
+                display: none;
+            }
+
+            .flashcard {
+                height: 350px;
+            }
+
+            .flashcard-face {
+                padding: 1.5rem;
+            }
+
+            .controls-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .topic-select {
+                flex-direction: column;
+            }
+
+            .button-group {
+                width: 100%;
+            }
+
+            button {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu Screen -->
+    <div id="menuScreen" class="menu-screen active">
+        <div class="menu-content">
+            <div class="menu-header">
+                <h1>GCSE Flashcards</h1>
+                <p>Select a subject to begin studying</p>
+            </div>
+            <div class="subject-grid">
+                <button class="subject-card" onclick="selectSubject('history')">
+                    <div class="card-icon-box history">
+                        <svg class="card-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #1e40af;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C6.5 6.253 2 10.998 2 17s4.5 10.747 10 10.747c5.5 0 10-4.998 10-10.747S17.5 6.253 12 6.253z"></path>
+                        </svg>
+                    </div>
+                    <h2>History</h2>
+                    <p>Anglo-Saxon & Norman England, 1060-88</p>
+                    <div class="card-stats">
+                        <p>• 44 flashcards</p>
+                        <p>• 8 topics covered</p>
+                        <p>• Edexcel exam format</p>
+                    </div>
+                </button>
+
+                <button class="subject-card" onclick="selectSubject('biology')">
+                    <div class="card-icon-box biology">
+                        <svg class="card-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #15803d;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5a4 4 0 100-8 4 4 0 000 8z"></path>
+                        </svg>
+                    </div>
+                    <h2>Biology</h2>
+                    <p>Core Biology Topics</p>
+                    <div class="card-stats">
+                        <p>• 40 flashcards</p>
+                        <p>• 4 topics covered</p>
+                        <p>• GCSE key concepts</p>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Study Screen -->
+    <div id="studyScreen" class="study-screen">
+        <div class="container">
+            <div class="header">
+                <button class="btn-menu" onclick="goToMenu()">
+                    <span>🏠</span>
+                    <span>Menu</span>
+                </button>
+                <div class="header-title">
+                    <span id="headerIcon"></span>
+                    <h1 id="headerTitle"></h1>
+                </div>
+                <div class="header-spacer"></div>
+            </div>
+
+            <div class="controls">
+                <div class="controls-row">
+                    <div class="topic-select">
+                        <label for="topicSelect">Topic:</label>
+                        <select id="topicSelect" onchange="filterCards()">
+                            <option value="All Topics">All Topics</option>
+                        </select>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button class="btn-shuffle" id="shuffleBtn" onclick="toggleShuffle()">Sequential</button>
+                        <button class="btn-reset" onclick="resetProgress()">Reset</button>
+                    </div>
+                </div>
+
+                <div class="progress-section">
+                    <div class="progress-labels">
+                        <span>Progress: <span id="progressText">0</span></span>
+                        <span>Mastered: <span id="masteredCount">0</span></span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flashcard-container">
+                <div class="flashcard" id="flashcard" onclick="toggleFlip()">
+                    <div class="flashcard-face flashcard-front">
+                        <div>
+                            <div class="topic-badge" id="topicBadge"></div>
+                            <h2>Question</h2>
+                            <p id="cardQuestion"></p>
+                        </div>
+                        <p class="flashcard-hint">Click to reveal answer</p>
+                    </div>
+                    <div class="flashcard-face flashcard-back">
+                        <div>
+                            <div class="topic-badge" id="topicBadgeBack"></div>
+                            <h2>Answer</h2>
+                            <p id="cardAnswer"></p>
+                        </div>
+                        <p class="flashcard-hint">Click to see question</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="navigation">
+                <button class="btn-nav" id="prevBtn" onclick="handlePrev()" disabled>
+                    ← Previous
+                </button>
+                <button class="btn-mastered" onclick="handleMastered()">
+                    ✓ Mastered
+                </button>
+                <button class="btn-nav" id="nextBtn" onclick="handleNext()">
+                    Next →
+                </button>
+            </div>
+
+            <div class="tips-section" id="tipsSection"></div>
+        </div>
+    </div>
+
+    <script>
+        // Data
+        const historyCards = [
+            { topic: "Late Anglo-Saxon England", q: "Describe the hierarchy of Anglo-Saxon society from top to bottom", a: "King → Earls (governed regions) → Thegns (local lords with 5+ hides of land) → Ceorls (freemen/peasants) → Slaves (around 10% of population)" },
+            { topic: "Late Anglo-Saxon England", q: "What were the main powers of Anglo-Saxon kings?", a: "Controlled law-making, taxation, military (fyrd), minting coins, land grants, and appointing earls. However, power depended on the support of the Witan and powerful earls." },
+            { topic: "Late Anglo-Saxon England", q: "What was the Witan and what was its role?", a: "The Witan was a council of nobles, bishops, and earls who advised the king on important matters like succession, laws, and threats. They could influence who became king." },
+            { topic: "Late Anglo-Saxon England", q: "How was Anglo-Saxon England divided for governance?", a: "Divided into shires (counties) governed by sheriffs, then into hundreds (groups of villages), which handled local administration and justice." },
+            { topic: "Late Anglo-Saxon England", q: "Describe the Anglo-Saxon law enforcement system", a: "Tithings: groups of 10 men responsible for each other's behavior. Hue and cry: community raised alarm to chase criminals. Ordeals: trials by fire/water to determine guilt through God's judgment." },
+            { topic: "Late Anglo-Saxon England", q: "Why was the Church so powerful and wealthy in Anglo-Saxon England?", a: "The Church owned about 25% of land, collected tithes (10% tax), provided education, kept records, advised kings, and had significant spiritual authority over the population." },
+            { topic: "Late Anglo-Saxon England", q: "How did the Godwin family gain such dominance?", a: "Earl Godwin became Edward's father-in-law (Edward married Edith Godwinson), controlled Wessex (richest earldom), sons controlled other earldoms. By 1060s, Godwinsons controlled most of England." },
+            { topic: "Late Anglo-Saxon England", q: "Why was Tostig Godwinson banished in 1065?", a: "Tostig ruled Northumbria harshly with high taxes and violence. In 1065, Northumbrians rebelled, demanding his removal. Harold chose to support the rebels over his brother to maintain peace, and Tostig was exiled." },
+            { topic: "Succession Crisis 1066", q: "Who were the four claimants to the English throne in 1066?", a: "1) Harold Godwinson (Earl of Wessex), 2) William of Normandy, 3) Harald Hardrada (King of Norway), 4) Edgar Aethling (Edward's great-nephew)" },
+            { topic: "Succession Crisis 1066", q: "What was Harold Godwinson's claim to the throne?", a: "Sub-regulus (deputy king) under Edward, most powerful earl, allegedly promised the throne by Edward on his deathbed, supported by the Witan, crowned immediately after Edward's death." },
+            { topic: "Succession Crisis 1066", q: "What was William of Normandy's claim to the throne?", a: "Claimed Edward promised him the throne in 1051, said Harold swore an oath to support him (1064), distant relative of Edward through Emma of Normandy, had papal support." },
+            { topic: "Succession Crisis 1066", q: "What was Harald Hardrada's claim to the throne?", a: "Based on agreement between Magnus of Norway and Harthacnut (previous English king) that survivor would inherit both kingdoms. Invited by Tostig to invade. Weakest claim." },
+            { topic: "Succession Crisis 1066", q: "Why was Edgar Aethling not chosen as king despite being Edward's closest blood relative?", a: "He was only about 14 years old, lacked military experience, had no power base in England, and the kingdom needed strong leadership with invasion threats from Norway and Normandy." },
+            { topic: "Battles of 1066", q: "What happened at the Battle of Fulford (20 Sept 1066)?", a: "Harald Hardrada and Tostig defeated Edwin and Morcar's northern forces near York. This weakened Harold Godwinson's position as his northern earls were defeated before he could arrive." },
+            { topic: "Battles of 1066", q: "What happened at the Battle of Stamford Bridge (25 Sept 1066)?", a: "Harold marched 190 miles in 4 days, surprised Hardrada and Tostig. Complete English victory - both invaders killed. However, it exhausted Harold's army and depleted his forces before Hastings." },
+            { topic: "Battles of 1066", q: "Describe the key events of the Battle of Hastings (14 Oct 1066)", a: "Harold's shield wall held firm initially. Norman cavalry charges failed. William's feigned retreats broke the shield wall. Harold's brothers killed. Harold shot in eye with arrow (disputed). Shield wall collapsed, Harold killed, English defeated." },
+            { topic: "Battles of 1066", q: "Why did William win the Battle of Hastings?", a: "Better tactics (feigned retreats), cavalry superiority, Harold's army exhausted from Stamford Bridge, Harold's rushed march south (190 miles in 4 days), luck (wind changed for William's crossing), superior weaponry (crossbows)." },
+            { topic: "Establishing Control", q: "What was the Harrying of the North (1069-70)?", a: "William's brutal response to northern rebellions. Crops burned, livestock killed, villages destroyed, people starved. Estimated 100,000 deaths. Created wasteland from York to Durham to prevent future rebellions." },
+            { topic: "Establishing Control", q: "What caused the Harrying of the North?", a: "Multiple northern rebellions in 1069 (including Edgar Aethling's claim), Danish invasion support, murder of Norman earl Robert Cumin in Durham, rebellion spread across North. William needed to crush resistance permanently." },
+            { topic: "Establishing Control", q: "Describe the motte-and-bailey castle design and its purposes", a: "Motte: raised earth mound with wooden keep on top. Bailey: enclosed courtyard below with wooden fence. Quick to build (7-14 days), provided military base, psychological intimidation, controlled key locations (towns, roads, rivers)." },
+            { topic: "Establishing Control", q: "What was the 1068 rebellion of Edwin and Morcar?", a: "Northern earls rebelled feeling sidelined by William. William resolved it by marching north with army, building castles in Warwick and Nottingham, making concessions. Edwin and Morcar submitted without major battle." },
+            { topic: "Establishing Control", q: "Who was Hereward the Wake and what was his rebellion (1070-71)?", a: "Anglo-Saxon thegn who led resistance from Ely (marshland, natural fortress) with Danish support. Attacked Peterborough Abbey. William built causeway across marshes, besieged Ely. Hereward escaped but rebellion crushed." },
+            { topic: "Establishing Control", q: "What were William's different methods for resolving rebellions?", a: "1) Military force and castle building, 2) Brutal devastation (Harrying), 3) Strategic concessions/pardons, 4) Replacing Anglo-Saxon nobles with Normans, 5) Engineering solutions (causeway to Ely), 6) Speed of response to prevent spread." },
+            { topic: "Feudalism & Land", q: "Describe the Norman feudal system hierarchy", a: "King (owned all land) → Tenants-in-chief (barons, bishops - given land) → Knights (military service) → Peasants/Villeins (worked the land). All held by oaths of homage and fealty." },
+            { topic: "Feudalism & Land", q: "How did William redistribute land after 1066?", a: "Confiscated Anglo-Saxon estates, gave them to loyal Norman followers. By 1087, only 5% of land held by Anglo-Saxons (down from 100%). Rewarded supporters while ensuring loyalty and control." },
+            { topic: "Feudalism & Land", q: "What was knight service in the feudal system?", a: "Tenants-in-chief owed the king a quota of knights (typically 40-60 days military service per year). They granted land to knights who provided this service. Created a military obligation system throughout realm." },
+            { topic: "Feudalism & Land", q: "What was homage in the feudal system?", a: "A ceremony where a vassal knelt before their lord, placed hands between lord's hands, and swore loyalty. Breaking this oath was considered a serious betrayal with severe consequences." },
+            { topic: "Norman Church", q: "Who was Lanfranc and what reforms did he make?", a: "Norman Archbishop of Canterbury (1070-89). Replaced Anglo-Saxon bishops with Normans, reorganized dioceses, moved cathedral seats to urban centers, separated Church courts from secular courts, enforced clerical celibacy, built new cathedrals." },
+            { topic: "Norman Church", q: "How did the Norman Church's role in society differ from Anglo-Saxon times?", a: "More centralized, stronger links to Rome, separate Church courts for clergy, increased emphasis on education, greater involvement in royal administration, Norman language in services initially, more elaborate cathedral architecture." },
+            { topic: "Norman Church", q: "Why did William remove Anglo-Saxon bishops and clergy?", a: "To ensure loyalty (Anglo-Saxons might support English claimants), improve Church standards (many Anglo-Saxon clergy considered poorly educated), consolidate Norman control, reward Norman supporters, strengthen ties with papacy." },
+            { topic: "Norman Church", q: "What was Stigand's role before Lanfranc?", a: "Anglo-Saxon Archbishop of Canterbury under Edward and Harold. Held multiple positions (pluralism), not recognized by Pope, symbolized 'corrupt' Anglo-Saxon Church. William removed him in 1070, replacing him with Lanfranc." },
+            { topic: "Domesday Book 1086", q: "What was the Domesday Book and when was it created?", a: "Massive survey of England ordered by William in 1085, completed 1086. Recorded land ownership, value, resources, population, and livestock for almost every settlement. Named because its judgment was as final as Doomsday." },
+            { topic: "Domesday Book 1086", q: "What were the purposes of the Domesday Book?", a: "1) Tax assessment - know how much revenue each area could provide, 2) Settle land disputes between Norman lords, 3) Demonstrate royal power and control, 4) Administrative tool for governance, 5) Military planning (know resources available)." },
+            { topic: "Domesday Book 1086", q: "Why was the Domesday Book significant for Norman control?", a: "Showed William's ability to survey entire kingdom (unprecedented), demonstrated total authority, provided detailed information for taxation/military planning, settled disputes among Normans, intimidated Anglo-Saxons with state power." },
+            { topic: "William's Government", q: "What was the Curia Regis and its role?", a: "The royal court consisting of most trusted nobles and bishops. Advised William on important decisions, helped govern when king was in Normandy, handled major legal cases, traveled with the king." },
+            { topic: "William's Government", q: "What were writs and how did William use them?", a: "Written royal commands carrying the king's seal. Used to communicate orders throughout kingdom, bypass local lords, demonstrate royal authority, issue laws and commands. More efficient than verbal orders and created written records." },
+            { topic: "William's Government", q: "How did William govern while in Normandy?", a: "Appointed trusted regents (often Lanfranc or William's half-brother Odo) to govern England. Used writs to send commands. Maintained castles as power bases. Returned quickly if major threats emerged." },
+            { topic: "William's Government", q: "Why were oaths and loyalty so important to William's government?", a: "Norman control depended on loyalty of tenants-in-chief. Oath-breaking was serious crime. Salisbury Oath (1086): all landowners swore directly to William, bypassing their immediate lords. Centralized loyalty and prevented rebellions organized by powerful barons." }
+        ];
+
+        const biologyCards = [
+            { topic: "Photosynthesis", q: "What is the word equation for photosynthesis?", a: "Carbon dioxide + Water → Glucose + Oxygen\n(in the presence of light and chlorophyll)" },
+            { topic: "Photosynthesis", q: "What is the chemical symbol equation for photosynthesis?", a: "6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂" },
+            { topic: "Photosynthesis", q: "Where does photosynthesis take place in a plant cell?", a: "In the chloroplasts, specifically in structures called grana (stacks of thylakoids) where chlorophyll is located." },
+            { topic: "Photosynthesis", q: "What is chlorophyll and what is its role?", a: "Chlorophyll is a green pigment found in chloroplasts that absorbs light energy (mainly red and blue light) to drive photosynthesis. It reflects green light, which is why plants appear green." },
+            { topic: "Photosynthesis", q: "What are the limiting factors of photosynthesis?", a: "1) Light intensity - more light = faster rate (up to a point)\n2) Carbon dioxide concentration - more CO₂ = faster rate\n3) Temperature - optimal around 25-35°C\n4) Chlorophyll amount" },
+            { topic: "Photosynthesis", q: "How do plants use the glucose produced in photosynthesis?", a: "1) Respiration for energy\n2) Converted to starch for storage\n3) Made into cellulose for cell walls\n4) Made into proteins (with nitrates)\n5) Made into lipids/oils for storage in seeds" },
+            { topic: "Photosynthesis", q: "What adaptations do leaves have for photosynthesis?", a: "Large surface area, thin (short diffusion distance), chloroplasts in palisade cells, stomata for gas exchange, network of veins for water/mineral transport, waxy cuticle reduces water loss" },
+            { topic: "Photosynthesis", q: "Why is photosynthesis important for life on Earth?", a: "Produces oxygen for respiration, removes CO₂ from atmosphere, provides food (glucose) for plants which forms the base of food chains, maintains atmospheric balance" },
+            { topic: "Cell Division", q: "What are the two types of cell division?", a: "Mitosis - produces identical cells for growth and repair (2 daughter cells)\nMeiosis - produces gametes (sex cells) with half the chromosomes (4 daughter cells)" },
+            { topic: "Cell Division", q: "What is mitosis and what is it used for?", a: "Mitosis produces two genetically identical daughter cells with the same number of chromosomes as the parent cell. Used for: growth, repair of damaged tissues, replacement of cells, asexual reproduction" },
+            { topic: "Cell Division", q: "Describe the stages of mitosis", a: "1) Interphase: DNA replicates, cell grows\n2) Prophase: Chromosomes condense, visible as X shapes\n3) Metaphase: Chromosomes line up at equator\n4) Anaphase: Chromatids pulled to opposite poles\n5) Telophase: Nuclear membranes form\n6) Cytokinesis: Cell divides into two" },
+            { topic: "Cell Division", q: "What is meiosis and what is it used for?", a: "Meiosis produces four non-identical gametes (sex cells) with half the number of chromosomes. Used for sexual reproduction - produces sperm in males and egg cells in females. Creates genetic variation." },
+            { topic: "Cell Division", q: "What are the key differences between mitosis and meiosis?", a: "Mitosis: 2 identical cells, same chromosome number (diploid), for growth/repair\nMeiosis: 4 non-identical cells, half chromosome number (haploid), for gamete production, involves two divisions, creates genetic variation" },
+            { topic: "Cell Division", q: "What is a chromosome and how many do humans have?", a: "A chromosome is a long strand of DNA that carries genes. Humans have 46 chromosomes (23 pairs) in body cells. Gametes have 23 chromosomes (one from each pair)." },
+            { topic: "Cell Division", q: "Why is meiosis important for genetic variation?", a: "Creates variation through: 1) Random mixing of maternal and paternal chromosomes, 2) Crossing over (exchange of genetic material between chromosomes), 3) Random fertilization of gametes" },
+            { topic: "Cell Division", q: "What happens during fertilization?", a: "A sperm cell (23 chromosomes) fuses with an egg cell (23 chromosomes) to form a zygote with 46 chromosomes (23 pairs). The zygote then divides by mitosis to form an embryo." },
+            { topic: "Cells", q: "What are the main differences between animal and plant cells?", a: "Plant cells have: cell wall (cellulose), permanent vacuole, chloroplasts\nBoth have: nucleus, cell membrane, cytoplasm, mitochondria, ribosomes\nAnimal cells: no cell wall, no chloroplasts, no permanent vacuole" },
+            { topic: "Cells", q: "What is the function of the nucleus?", a: "Contains genetic material (DNA) in chromosomes, controls all cell activities, contains instructions for making proteins" },
+            { topic: "Cells", q: "What is the function of mitochondria?", a: "Site of aerobic respiration, releases energy from glucose, has folded inner membrane to increase surface area for respiration. 'Powerhouse of the cell'" },
+            { topic: "Cells", q: "What is the function of ribosomes?", a: "Site of protein synthesis - where amino acids are joined together to make proteins following instructions from DNA" },
+            { topic: "Cells", q: "What is the function of the cell membrane?", a: "Controls what enters and exits the cell (selectively permeable), allows useful substances in and waste products out, holds the cell together" },
+            { topic: "Cells", q: "What are the functions unique to plant cells?", a: "Cell wall: provides structure and support (made of cellulose)\nChloroplasts: site of photosynthesis, contains chlorophyll\nVacuole: stores cell sap, helps maintain cell rigidity/turgidity" },
+            { topic: "Cells", q: "What are specialized cells and give examples", a: "Cells adapted for specific functions:\nRed blood cells - no nucleus, biconcave shape for oxygen transport\nNerve cells - long axons for electrical impulse transmission\nSperm cells - tail for swimming, lots of mitochondria\nRoot hair cells - large surface area for water absorption" },
+            { topic: "Cells", q: "What is cell differentiation?", a: "The process where cells become specialized for particular functions. Common in embryos. Most animal cells differentiate early and lose ability. Plant cells can differentiate throughout life." },
+            { topic: "Cells", q: "What is the difference between prokaryotic and eukaryotic cells?", a: "Prokaryotic: no nucleus (DNA free in cytoplasm), no membrane-bound organelles, bacteria\nEukaryotic: has nucleus, has organelles (mitochondria, etc.), animal and plant cells" },
+            { topic: "Respiration", q: "What is aerobic respiration and where does it occur?", a: "Aerobic respiration uses oxygen to release energy from glucose. Occurs in mitochondria. Most efficient way to release energy from food." },
+            { topic: "Respiration", q: "What is the word equation for aerobic respiration?", a: "Glucose + Oxygen → Carbon dioxide + Water (+ energy released)" },
+            { topic: "Respiration", q: "What is the chemical symbol equation for aerobic respiration?", a: "C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O" },
+            { topic: "Respiration", q: "What is anaerobic respiration?", a: "Respiration without oxygen. Less efficient than aerobic - releases less energy. Occurs when oxygen supply is insufficient (e.g., during intense exercise)." },
+            { topic: "Respiration", q: "What is the word equation for anaerobic respiration in animals?", a: "Glucose → Lactic acid (+ small amount of energy)\n\nLactic acid builds up in muscles causing fatigue and pain" },
+            { topic: "Respiration", q: "What is the word equation for anaerobic respiration in plants/yeast?", a: "Glucose → Ethanol + Carbon dioxide (+ small amount of energy)\n\nThis is called fermentation, used in brewing and baking" },
+            { topic: "Respiration", q: "What is oxygen debt?", a: "The amount of extra oxygen needed after exercise to break down lactic acid that built up during anaerobic respiration. Causes continued heavy breathing after exercise stops." },
+            { topic: "Respiration", q: "Why do we need energy from respiration?", a: "For: muscle contraction, protein synthesis, cell division, maintaining body temperature, active transport, transmitting nerve impulses, growth and repair" },
+            { topic: "Respiration", q: "How does exercise affect breathing rate and heart rate?", a: "During exercise: muscles need more energy → more aerobic respiration → need more oxygen and glucose → breathing rate and depth increase → heart rate increases to deliver more oxygenated blood to muscles" },
+            { topic: "Respiration", q: "What is metabolism?", a: "The sum of all chemical reactions in the body. Includes: respiration, photosynthesis, protein synthesis, breaking down molecules, converting glucose to starch/glycogen/cellulose" }
+        ];
+
+        let currentSubject = null;
+        let currentIndex = 0;
+        let isFlipped = false;
+        let masteredCards = [];
+        let displayCards = [];
+        let isShuffled = false;
+
+        function selectSubject(subject) {
+            currentSubject = subject;
+            currentIndex = 0;
+            isFlipped = false;
+            masteredCards = [];
+            isShuffled = false;
+            
+            document.getElementById('menuScreen').classList.remove('active');
+            document.getElementById('studyScreen').classList.add('active');
+            
+            initializeSubject();
+        }
+
+        function initializeSubject() {
+            const allCards = currentSubject === 'history' ? historyCards : biologyCards;
+            const subjectTitle = currentSubject === 'history' ? 'History: Anglo-Saxon & Norman England' : 'Biology: Core Topics';
+            const icon = currentSubject === 'history' ? '📖' : '🔬';
+            
+            document.getElementById('headerTitle').textContent = subjectTitle;
+            document.getElementById('headerIcon').textContent = icon;
+            
+            const topicSelect = document.getElementById('topicSelect');
+            const topics = ['All Topics', ...new Set(allCards.map(card => card.topic))];
+            topicSelect.innerHTML = topics.map(topic => `<option value="${topic}">${topic}</option>`).join('');
+            
+            displayCards = [...allCards];
+            updateCard();
+            updateProgress();
+            populateTips();
+        }
+
+        function goToMenu() {
+            document.getElementById('studyScreen').classList.remove('active');
+            document.getElementById('menuScreen').classList.add('active');
+        }
+
+        function filterCards() {
+            const allCards = currentSubject === 'history' ? historyCards : biologyCards;
+            const selectedTopic = document.getElementById('topicSelect').value;
+            
+            displayCards = selectedTopic === 'All Topics' 
+                ? [...allCards]
+                : allCards.filter(card => card.topic === selectedTopic);
+            
+            if (isShuffled) {
+                displayCards.sort(() => Math.random() - 0.5);
+            }
+            
+            currentIndex = 0;
+            isFlipped = false;
+            updateCard();
+            updateProgress();
+        }
+
+        function toggleShuffle() {
+            isShuffled = !isShuffled;
+            const btn = document.getElementById('shuffleBtn');
+            
+            if (isShuffled) {
+                btn.textContent = 'Shuffled';
+                btn.classList.add('active');
+                const allCards = currentSubject === 'history' ? historyCards : biologyCards;
+                const selectedTopic = document.getElementById('topicSelect').value;
+                displayCards = selectedTopic === 'All Topics' 
+                    ? [...allCards]
+                    : allCards.filter(card => card.topic === selectedTopic);
+                displayCards.sort(() => Math.random() - 0.5);
+            } else {
+                btn.textContent = 'Sequential';
+                btn.classList.remove('active');
+                filterCards();
+            }
+            
+            currentIndex = 0;
+            isFlipped = false;
+            updateCard();
+            updateProgress();
+        }
+
+        function resetProgress() {
+            masteredCards = [];
+            currentIndex = 0;
+            isFlipped = false;
+            updateCard();
+            updateProgress();
+        }
+
+        function toggleFlip() {
+            isFlipped = !isFlipped;
+            document.getElementById('flashcard').classList.toggle('flipped');
+        }
+
+        function handleNext() {
+            if (currentIndex < displayCards.length - 1) {
+                currentIndex++;
+                isFlipped = false;
+                document.getElementById('flashcard').classList.remove('flipped');
+                updateCard();
+                updateProgress();
+            }
+        }
+
+        function handlePrev() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                isFlipped = false;
+                document.getElementById('flashcard').classList.remove('flipped');
+                updateCard();
+                updateProgress();
+            }
+        }
+
+        function handleMastered() {
+            const cardId = `${currentSubject}-${displayCards[currentIndex].topic}-${currentIndex}`;
+            if (!masteredCards.includes(cardId)) {
+                masteredCards.push(cardId);
+            }
+            handleNext();
+        }
+
+        function updateCard() {
+            const card = displayCards[currentIndex];
+            const badgeClass = currentSubject === 'history' ? 'history' : 'biology';
+            
+            document.getElementById('cardQuestion').textContent = card.q;
+            document.getElementById('cardAnswer').textContent = card.a;
+            document.getElementById('topicBadge').textContent = card.topic;
+            document.getElementById('topicBadge').className = `topic-badge ${badgeClass}`;
+            document.getElementById('topicBadgeBack').textContent = card.topic;
+            document.getElementById('topicBadgeBack').className = `topic-badge ${badgeClass}`;
+            
+            document.getElementById('prevBtn').disabled = currentIndex === 0;
+            document.getElementById('nextBtn').disabled = currentIndex === displayCards.length - 1;
+        }
+
+        function updateProgress() {
+            const total = displayCards.length;
+            const current = currentIndex + 1;
+            const progress = (current / total) * 100;
+            
+            document.getElementById('progressText').textContent = `${current} / ${total}`;
+            document.getElementById('masteredCount').textContent = masteredCards.filter(id => id.startsWith(currentSubject)).length;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+        }
+
+        function populateTips() {
+            const tipsSection = document.getElementById('tipsSection');
+            
+            if (currentSubject === 'history') {
+                tipsSection.innerHTML = `
+                    <h3>Exam Tips</h3>
+                    <ul>
+                        <li><strong>Q1 (2 marks each):</strong> Give TWO specific features with supporting details</li>
+                        <li><strong>Q2 (12 marks):</strong> Explain 2-3 reasons with detailed explanation and links</li>
+                        <li><strong>Q3 (16 marks):</strong> Evaluate both sides, use specific evidence, reach a judgment</li>
+                    </ul>
+                `;
+            } else {
+                tipsSection.innerHTML = `
+                    <h3>Study Tips</h3>
+                    <ul>
+                        <li><strong>Learn equations:</strong> Know both word and symbol equations for photosynthesis and respiration</li>
+                        <li><strong>Draw diagrams:</strong> Practice drawing cells, leaf structure, and mitosis stages</li>
+                        <li><strong>Compare concepts:</strong> Understand differences between mitosis/meiosis, aerobic/anaerobic</li>
+                        <li><strong>Use examples:</strong> Give specific examples when explaining specialized cells</li>
+                    </ul>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
