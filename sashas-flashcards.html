@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crime & Punishment Flashcards — Year 10</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1208;
+    --parchment: #f5ead6;
+    --parchment-dark: #e8d5b0;
+    --parchment-mid: #ede0c4;
+    --red: #8b1a1a;
+    --gold: #c8922a;
+    --gold-light: #e8b84b;
+    --shadow: rgba(26,18,8,0.18);
+    --card-w: 680px;
+    --card-h: 400px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: #1a1208;
+    background-image:
+      radial-gradient(ellipse at 20% 20%, #2d1f0a 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 80%, #0e0c08 0%, transparent 60%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4' fill='%231a1208'/%3E%3Ccircle cx='1' cy='1' r='0.5' fill='%23221808' opacity='0.6'/%3E%3C/svg%3E");
+    min-height: 100vh;
+    font-family: 'EB Garamond', serif;
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 16px 60px;
+  }
+
+  /* ── Header ── */
+  .header {
+    text-align: center;
+    margin-bottom: 36px;
+    animation: fadeDown 0.7s ease both;
+  }
+  .header-badge {
+    display: inline-block;
+    border: 2px solid var(--gold);
+    color: var(--gold);
+    font-family: 'EB Garamond', serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    padding: 4px 18px;
+    margin-bottom: 14px;
+  }
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    font-weight: 900;
+    color: var(--parchment);
+    line-height: 1.1;
+    text-shadow: 0 2px 12px rgba(200,146,42,0.25);
+  }
+  .header h1 span { color: var(--gold-light); }
+  .header p {
+    color: var(--parchment-dark);
+    font-style: italic;
+    font-size: 1.05rem;
+    margin-top: 8px;
+    opacity: 0.8;
+  }
+
+  /* ── Topic tabs ── */
+  .topic-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 32px;
+    max-width: 780px;
+    animation: fadeDown 0.7s 0.15s ease both;
+  }
+  .topic-btn {
+    background: transparent;
+    border: 1px solid rgba(200,146,42,0.4);
+    color: var(--parchment-dark);
+    font-family: 'EB Garamond', serif;
+    font-size: 0.9rem;
+    padding: 7px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.04em;
+  }
+  .topic-btn:hover { border-color: var(--gold); color: var(--gold-light); }
+  .topic-btn.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  /* ── Progress ── */
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+    color: var(--parchment-dark);
+    font-size: 0.92rem;
+    font-style: italic;
+    animation: fadeDown 0.7s 0.25s ease both;
+  }
+  .progress-bar {
+    width: 180px;
+    height: 4px;
+    background: rgba(200,146,42,0.2);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  /* ── Card scene ── */
+  .scene {
+    width: var(--card-w);
+    max-width: 96vw;
+    height: var(--card-h);
+    perspective: 1200px;
+    cursor: pointer;
+    animation: fadeUp 0.6s 0.3s ease both;
+    margin-bottom: 28px;
+  }
+  .card-inner {
+    width: 100%; height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.65s cubic-bezier(0.4, 0.2, 0.2, 1);
+  }
+  .scene.flipped .card-inner { transform: rotateY(180deg); }
+
+  .card-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 4px;
+    padding: 40px 44px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    box-shadow:
+      0 4px 6px var(--shadow),
+      0 12px 40px rgba(0,0,0,0.45),
+      inset 0 0 0 1px rgba(200,146,42,0.35);
+  }
+  .card-front {
+    background:
+      linear-gradient(160deg, var(--parchment) 0%, var(--parchment-mid) 50%, var(--parchment-dark) 100%);
+  }
+  .card-back {
+    background:
+      linear-gradient(160deg, #f0e2c2 0%, #e8d5b0 50%, #dfc99a 100%);
+    transform: rotateY(180deg);
+  }
+
+  /* parchment texture overlay */
+  .card-face::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 4px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  /* decorative corner lines */
+  .card-face::after {
+    content: '';
+    position: absolute;
+    inset: 12px;
+    border: 1px solid rgba(139,26,26,0.22);
+    border-radius: 2px;
+    pointer-events: none;
+  }
+
+  .card-topic {
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--red);
+    font-family: 'EB Garamond', serif;
+    white-space: nowrap;
+  }
+  .card-num {
+    position: absolute;
+    bottom: 14px;
+    right: 22px;
+    font-size: 0.7rem;
+    color: rgba(139,26,26,0.5);
+    letter-spacing: 0.1em;
+  }
+  .flip-hint {
+    position: absolute;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(139,26,26,0.45);
+  }
+
+  .card-q {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.15rem, 2.8vw, 1.55rem);
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.45;
+    max-width: 520px;
+  }
+  .card-a {
+    font-family: 'EB Garamond', serif;
+    font-size: clamp(0.95rem, 2.2vw, 1.18rem);
+    color: #2a1a08;
+    line-height: 1.7;
+    max-width: 540px;
+  }
+  .card-a strong {
+    color: var(--red);
+    font-weight: 500;
+  }
+
+  /* ── Controls ── */
+  .controls {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    animation: fadeUp 0.6s 0.45s ease both;
+  }
+  .btn {
+    background: transparent;
+    border: 1px solid rgba(200,146,42,0.5);
+    color: var(--parchment);
+    font-family: 'EB Garamond', serif;
+    font-size: 1rem;
+    letter-spacing: 0.06em;
+    padding: 10px 28px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn:hover { background: rgba(200,146,42,0.12); border-color: var(--gold); color: var(--gold-light); }
+  .btn:disabled { opacity: 0.3; cursor: default; }
+  .btn-primary {
+    background: var(--red);
+    border-color: var(--red);
+    color: var(--parchment);
+  }
+  .btn-primary:hover { background: #a32020; border-color: #a32020; color: var(--parchment); }
+
+  .shuffle-btn {
+    background: transparent;
+    border: none;
+    color: rgba(200,146,42,0.6);
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 8px;
+    transition: color 0.2s;
+    font-family: 'EB Garamond', serif;
+    letter-spacing: 0.05em;
+  }
+  .shuffle-btn:hover { color: var(--gold); }
+
+  /* ── Animations ── */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes cardSlide {
+    from { opacity: 0; transform: translateX(30px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  .scene.animate-in { animation: cardSlide 0.35s ease both; }
+
+  /* ── Footer ── */
+  .footer {
+    margin-top: 48px;
+    color: rgba(200,146,42,0.35);
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  @media (max-width: 500px) {
+    :root { --card-h: 360px; }
+    .card-face { padding: 32px 24px; }
+    .btn { padding: 9px 18px; font-size: 0.9rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-badge">Year 10 · Summer Exam Revision</div>
+  <h1>Crime &amp; <span>Punishment</span></h1>
+  <p>Flashcards · Click each card to reveal the answer</p>
+</header>
+
+<nav class="topic-bar" id="topicBar"></nav>
+
+<div class="progress-row">
+  <span id="progressText">Card 1 of 0</span>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <button class="shuffle-btn" onclick="shuffle()" title="Shuffle cards">⇌ Shuffle</button>
+</div>
+
+<div class="scene" id="scene" onclick="flipCard()">
+  <div class="card-inner" id="cardInner">
+    <div class="card-face card-front">
+      <span class="card-topic" id="frontTopic"></span>
+      <p class="card-q" id="cardQ"></p>
+      <span class="flip-hint">↩ click to reveal</span>
+      <span class="card-num" id="cardNum"></span>
+    </div>
+    <div class="card-face card-back">
+      <span class="card-topic" id="backTopic"></span>
+      <p class="card-a" id="cardA"></p>
+      <span class="card-num" id="cardNumBack"></span>
+    </div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="btn" id="prevBtn" onclick="prevCard()">← Prev</button>
+  <button class="btn btn-primary" onclick="nextCard()">Next →</button>
+</div>
+
+<footer class="footer">Crime &amp; Punishment · GCSE History · Edexcel</footer>
+
+<script>
+const ALL_CARDS = [
+  /* ══════════════════════════════════════════════
+     TOPIC 1 — SMUGGLING (18th century onwards)
+  ══════════════════════════════════════════════ */
+  { topic:"Smuggling", q:"Why did smuggling increase dramatically in 18th-century Britain?", a:"High taxes (excise duties) on goods like tea, brandy, silk and tobacco made smuggling highly profitable. Duties could add 100–200% to a goods' price, making the risk worthwhile for smugglers and buyers alike." },
+  { topic:"Smuggling", q:"Which goods were most commonly smuggled in the 18th century?", a:"<strong>Tea, brandy/spirits, tobacco, silk, and lace</strong> were the most common. Tea was especially popular — by the 1740s it is estimated that more tea was smuggled than sold legally." },
+  { topic:"Smuggling", q:"What was the Hawkhurst Gang and why were they significant?", a:"The Hawkhurst Gang was a notorious Sussex/Kent smuggling gang in the 1740s. They controlled a vast smuggling network, used extreme violence, and could muster 500 armed men. Their brutality (e.g., the Goudhurst and Poole Customs House raid, 1747) shocked the country and led to harsher laws." },
+  { topic:"Smuggling", q:"How did local communities generally react to smugglers in the 18th century?", a:"Most communities <strong>protected and aided smugglers</strong>. Smugglers provided cheap goods, employed locals as look-outs or carriers ('batmen'), and were seen as heroes fighting unfair taxes. Informing on smugglers was dangerous and socially unacceptable." },
+  { topic:"Smuggling", q:"What laws were introduced to try to stop smuggling in the 18th century?", a:"The <strong>Smuggling Act (1736)</strong> made gang smuggling a capital offence. The <strong>Death of Customs Officers Act (1746)</strong> made it capital to assault officers. Despite harsh punishments, smuggling continued because demand and profit remained high." },
+  { topic:"Smuggling", q:"What role did the Riding Officers and Revenue Men play in combating smuggling?", a:"Riding Officers patrolled coastlines on horseback to intercept smugglers. Revenue cutters (fast naval vessels) chased smugglers at sea. However, they were underpaid, often outnumbered, and frequently bribed. Their effectiveness was very limited before the 19th century." },
+  { topic:"Smuggling", q:"Why did smuggling decline significantly in the 19th century?", a:"<strong>William Pitt's free trade reforms (1784)</strong> dramatically cut import duties on tea and other goods, removing much of the financial incentive. The Coast Guard (formed 1822), professional customs service, and free trade policies together largely ended mass smuggling by the mid-1800s." },
+  { topic:"Smuggling", q:"What does the popularity of smuggling tell us about attitudes to law in 18th-century society?", a:"It shows that <strong>law was seen as legitimate only when fair</strong>. Ordinary people did not consider smuggling morally wrong because taxes were seen as unjust. This undermined law enforcement and shows how community attitudes shaped crime levels." },
+
+  /* ══════════════════════════════════════════════
+     TOPIC 2 — CRIMES 1700–1900
+  ══════════════════════════════════════════════ */
+  { topic:"Crimes 1700–1900", q:"What were the most common crimes in 18th-century England?", a:"<strong>Theft and property crime</strong> dominated — pickpocketing, highway robbery, burglary, and sheep/cattle stealing. Crimes against the person (assault, murder) existed but were less prosecuted. Property crime reflected poverty and the vast gap between rich and poor." },
+  { topic:"Crimes 1700–1900", q:"What was the 'Bloody Code' and how many offences did it cover?", a:"The Bloody Code refers to the English criminal law system of the 18th century, which listed <strong>over 200 capital offences</strong> by 1820 — including stealing goods worth more than 12 pence from a shop. It was introduced mainly to protect property." },
+  { topic:"Crimes 1700–1900", q:"Why was the Bloody Code less severe in practice than in theory?", a:"Juries often refused to convict if the penalty seemed too harsh; judges used benefit of clergy or transportation as alternatives; victims sometimes dropped charges. The actual execution rate was much lower than convictions suggest — mercy was regularly used." },
+  { topic:"Crimes 1700–1900", q:"What was highway robbery and why did it decline by the 19th century?", a:"Highway robbery ('highwaymen') involved armed robbery of coaches on roads. It declined due to <strong>better road surfaces (turnpikes), banking replacing cash travel, enclosed coaches, mounted patrols,</strong> and the growth of policing. By 1800 it was largely eliminated." },
+  { topic:"Crimes 1700–1900", q:"How did industrialisation change the nature of crime in the 19th century?", a:"Rapid urbanisation created <strong>crowded slum areas</strong> where crime flourished. New crimes emerged: factory theft, fraud, railway theft. Organised gangs appeared in cities. Poverty drove petty theft; social dislocation weakened community controls that had deterred crime." },
+  { topic:"Crimes 1700–1900", q:"What were the main changes to criminal law under Sir Robert Peel in the 1820s?", a:"Peel's <strong>Criminal Law reforms (1823–27)</strong> repealed the death penalty for over 100 offences, aiming for more consistent punishment. He believed overly harsh laws led to acquittals. This began the shift from bloody, theatrical punishment to rational, proportionate sentences." },
+  { topic:"Crimes 1700–1900", q:"What was the significance of poaching as a crime in this period?", a:"Poaching (illegal hunting of game) was widespread among the rural poor. The <strong>Black Act (1723)</strong> made armed poaching capital. The Game Laws protected the gentry's exclusive hunting rights. Poaching was seen as legitimate by the poor — game on their land yet forbidden to eat." },
+  { topic:"Crimes 1700–1900", q:"How did attitudes to crimes such as witchcraft change between 1700 and 1900?", a:"Belief in witchcraft declined with <strong>Enlightenment rationalism</strong>. The Witchcraft Act was repealed in <strong>1736</strong>, replacing criminal prosecution with a fine for claiming to practise it. By 1900, witchcraft had effectively vanished as a recognised crime — a major shift in what society defined as criminal." },
+
+  /* ══════════════════════════════════════════════
+     TOPIC 3 — AIMS OF PUNISHMENT (1700 onwards)
+  ══════════════════════════════════════════════ */
+  { topic:"Aims of Punishment", q:"What were the main aims of punishment in 18th-century England?", a:"<strong>Deterrence</strong> (frightening others from crime) was primary. <strong>Retribution</strong> (punishment deserved for wrong done) was also central. Rehabilitation barely featured. Public executions, flogging, and the pillory were meant to be seen — spectacle was the point." },
+  { topic:"Aims of Punishment", q:"What was transportation and how did it serve as a punishment?", a:"Transportation sent convicted criminals (often for 7–14 years or life) to penal colonies — first America, then <strong>Australia from 1788</strong>. It removed criminals from society (incapacitation), acted as a deterrent, and was cheaper than imprisonment. About 160,000 were transported to Australia." },
+  { topic:"Aims of Punishment", q:"What were the arguments against public execution as a deterrent?", a:"Critics (including reformers like <strong>Samuel Romilly and Jeremy Bentham</strong>) argued: crowds saw it as entertainment; convicts became heroes; people pickpocketed in the crowds — proving it didn't deter; juries refused to convict to avoid the death penalty for minor crimes." },
+  { topic:"Aims of Punishment", q:"How did prison reform change the aims of punishment in the 19th century?", a:"Reformers like <strong>John Howard</strong> (1777) and <strong>Elizabeth Fry</strong> (1820s) argued prisons should reform criminals, not just punish. This led to the Separate System (silent, isolated reflection) at Pentonville (1842) — rehabilitation became a stated aim alongside deterrence." },
+  { topic:"Aims of Punishment", q:"What was the 'Separate System' used in Victorian prisons?", a:"Introduced at <strong>Pentonville Prison (1842)</strong>, prisoners were kept in solitary cells, wore hoods to prevent recognition, and had no contact with others. The aim was moral reform through silence and reflection. In practice it caused serious mental illness and was widely criticised by the 1860s." },
+  { topic:"Aims of Punishment", q:"What replaced transportation as a punishment after Australia refused convicts in the 1850s?", a:"<strong>Penal servitude</strong> (hard labour in British prisons) replaced transportation. This reinforced the shift toward prisons as the main form of serious punishment. New large prisons were built across Britain in the Victorian era." },
+  { topic:"Aims of Punishment", q:"Why were public executions abolished in 1868?", a:"By the mid-19th century, public hangings attracted huge, unruly crowds and were seen as barbaric. Critics argued they brutalised audiences rather than deterring crime. The <strong>Capital Punishment Amendment Act (1868)</strong> moved executions inside prisons — shifting focus from spectacle to hidden punishment." },
+  { topic:"Aims of Punishment", q:"How did Enlightenment thinking influence punishment reform in the 18th–19th centuries?", a:"Thinkers like <strong>Cesare Beccaria</strong> (1764) argued punishment should be proportionate, certain, and swift — not brutal or random. He opposed torture and capital punishment. His ideas influenced Peel and later reformers, shifting aims from spectacle/revenge toward rational, consistent deterrence." },
+
+  /* ══════════════════════════════════════════════
+     TOPIC 4 — LAW ENFORCEMENT (1700 onwards)
+  ══════════════════════════════════════════════ */
+  { topic:"Law Enforcement", q:"How was law enforcement organised in England before 1829?", a:"It was <strong>local and unprofessional</strong>. Parish constables (unpaid, often incompetent) and night watchmen ('Charleys') were the main forces. Justices of the Peace oversaw law in counties. The system was inconsistent, relied heavily on victims bringing their own prosecutions, and had no detective capacity." },
+  { topic:"Law Enforcement", q:"Who were the Bow Street Runners and why were they significant?", a:"Founded by magistrate <strong>Henry Fielding in 1749</strong>, the Bow Street Runners were paid thief-takers based in London. They were the first professional detective force in England, investigating crimes and pursuing criminals. They proved a professional force was viable and influenced later police reform." },
+  { topic:"Law Enforcement", q:"Why did Robert Peel establish the Metropolitan Police in 1829?", a:"Peel argued London needed a professional, preventive police force. Rising urban crime, public disorder (e.g., food riots), and the failure of the old system convinced Parliament. The <strong>Metropolitan Police Act (1829)</strong> created a 3,000-strong uniformed force based at Scotland Yard." },
+  { topic:"Law Enforcement", q:"What were the key principles of the new Metropolitan Police (1829)?", a:"Officers wore <strong>civilian-style uniforms</strong> (blue, not military red) to appear non-threatening. They patrolled fixed beats to <strong>prevent</strong> crime. They were disciplined, sober, and paid (unlike the old watch). The aim was visible deterrence — stopping crime before it happened." },
+  { topic:"Law Enforcement", q:"How did the public initially react to the new police force in 1829?", a:"Many were <strong>hostile</strong>. The working class feared a government spy force oppressing the poor. They nicknamed officers 'Peelers' or 'Bobbies' (mockingly at first). Early officers faced abuse and violence. Trust built slowly as the force proved effective and relatively impartial." },
+  { topic:"Law Enforcement", q:"What was the County and Borough Police Act (1856) and why was it important?", a:"It made it <strong>compulsory for every county and borough to have a professional police force</strong> — extending the Metropolitan model nationally. It also introduced government inspection and grants. By the 1860s Britain had a nationwide professional police service for the first time." },
+  { topic:"Law Enforcement", q:"How did the role of detective policing develop in the 19th century?", a:"A <strong>Detective Department</strong> was created within the Metropolitan Police in 1842. It grew in response to criticism that the police only prevented crime but didn't catch criminals. The <strong>Criminal Investigation Department (CID)</strong> was established in 1878, significantly expanding detective capacity." },
+  { topic:"Law Enforcement", q:"What impact did technology have on law enforcement in the 19th century?", a:"The <strong>telegraph (from 1837)</strong> allowed rapid communication between forces. <strong>Photography</strong> from the 1860s was used to record criminals. The <strong>Rogues' Gallery</strong> of mugshots helped identify repeat offenders. Railways allowed police to pursue criminals across distances previously impossible to cover." },
+
+  /* ══════════════════════════════════════════════
+     TOPIC 5 — WHITECHAPEL (all of it!)
+  ══════════════════════════════════════════════ */
+  { topic:"Whitechapel", q:"What were the main features of Whitechapel as a district in the late 19th century?", a:"Whitechapel in the East End of London was <strong>severely overcrowded, poverty-stricken, and crime-ridden</strong>. It had high unemployment, poor sanitation, disease, and poor housing. It was home to thousands of recent immigrants (especially Jewish refugees from Eastern Europe) and the destitute." },
+  { topic:"Whitechapel", q:"What were 'rookeries' and why did they cause law enforcement problems?", a:"Rookeries were densely packed slum tenements — dark, maze-like courts and alleys with multiple families in one room. They were <strong>extremely difficult for police to patrol</strong>, provided hiding places for criminals, and bred disease and disorder. Buck's Row and Dorset Street were notorious examples." },
+  { topic:"Whitechapel", q:"What role did workhouses play in Whitechapel's social problems?", a:"The Whitechapel workhouse housed the destitute in grim conditions. People only entered as a last resort. Many preferred casual labouring, begging, or crime. Workhouses contributed to <strong>social desperation</strong> — the women murdered by Jack the Ripper all had connections to poverty and homelessness." },
+  { topic:"Whitechapel", q:"Who were the main suspects in the Jack the Ripper case (1888)?", a:"No one was ever convicted. Key suspects included: <strong>Montague Druitt</strong> (lawyer, drowned Dec 1888); <strong>Aaron Kosminski</strong> (Polish Jew, mentally ill); <strong>Michael Ostrog</strong> (Russian criminal). The case remains unsolved — the police had very limited forensic tools and over 300 suspects." },
+  { topic:"Whitechapel", q:"How many canonical victims did Jack the Ripper have, and who were they?", a:"Five 'canonical' victims: <strong>Mary Ann Nichols</strong> (Aug 31), <strong>Annie Chapman</strong> (Sep 8), <strong>Elizabeth Stride</strong> (Sep 30), <strong>Catherine Eddowes</strong> (Sep 30 — 'double event'), and <strong>Mary Jane Kelly</strong> (Nov 9, 1888). All were women living in extreme poverty in Whitechapel." },
+  { topic:"Whitechapel", q:"What were the main challenges facing the Metropolitan Police investigating the Ripper murders?", a:"<strong>No forensic science</strong> (DNA, fingerprints not yet used); crimes at night in dark alleys; witnesses unreliable; the large immigrant population was suspicious of police; political pressure to solve quickly distorted investigations; too many suspects and false confessions overwhelmed detectives." },
+  { topic:"Whitechapel", q:"How did the press and public affect the Ripper investigation?", a:"Newspaper coverage was sensationalist and massive — creating public panic. Letters claiming to be from the Ripper (some possibly hoaxes by journalists) complicated the investigation. The press gave the killer his name 'Jack the Ripper.' Public fear led to political pressure on the police Commissioner, who resigned in 1888." },
+  { topic:"Whitechapel", q:"What was the role of the H Division of the Metropolitan Police in Whitechapel?", a:"<strong>H Division</strong> was the Metropolitan Police division responsible for Whitechapel. Based at Leman Street, it dealt with chronic crime and disorder. During the Ripper murders, it was led by <strong>Inspector Frederick Abberline</strong>, who led the on-the-ground investigation." },
+  { topic:"Whitechapel", q:"What were 'common lodging houses' (doss houses) and why were they significant?", a:"Cheap overnight accommodation — 4 pence per night — where the very poor slept in shared dormitories. Several Ripper victims had recently been turned away from these houses. They were <strong>overcrowded, insanitary, and ungoverned</strong> — places where the desperate and criminal mixed freely." },
+  { topic:"Whitechapel", q:"What was the Whitechapel Vigilance Committee and how effective was it?", a:"Formed in September 1888, local business owners led by <strong>George Lusk</strong> organised citizen patrols of Whitechapel streets. Lusk later received the infamous 'From Hell' letter and a piece of preserved kidney. The committee showed public frustration with police failure, but patrols found no suspects." },
+  { topic:"Whitechapel", q:"What methods did the police use to investigate the Ripper murders?", a:"<strong>House-to-house inquiries, interviewing hundreds of witnesses, circulating suspect descriptions, using bloodhounds (briefly), posting plain-clothes officers, and analysing letters</strong>. The investigation was large-scale for the era but lacked modern forensics. A reward was controversially refused by the Home Secretary." },
+  { topic:"Whitechapel", q:"How did the Ripper murders expose wider social issues in Victorian Britain?", a:"The murders brought <strong>national attention to the desperate poverty, homelessness, and exploitation</strong> in the East End. Reformers like <strong>Charles Booth</strong> used it to push for social change. The case highlighted how differently the law protected the poor versus the wealthy, and fuelled debates on housing and poverty." },
+  { topic:"Whitechapel", q:"What was the significance of immigration to Whitechapel in the late 19th century?", a:"Large numbers of <strong>Jewish refugees from Eastern Europe</strong> (fleeing pogroms) settled in Whitechapel from the 1880s. This created tension — some suspected the Ripper was an immigrant. Anti-Semitic graffiti appeared at one crime scene. Police had to be careful not to inflame tensions while investigating." },
+  { topic:"Whitechapel", q:"Why was the police investigation into the Ripper murders considered a failure?", a:"No one was ever charged or convicted. The Commissioner (<strong>Sir Charles Warren</strong>) resigned. Forensic opportunities were missed — Warren controversially ordered a key piece of evidence (wall graffiti) wiped away before it could be photographed, fearing anti-Semitic riots." },
+];
+
+let deck = [...ALL_CARDS];
+let current = 0;
+let isFlipped = false;
+let activeTopic = 'All';
+
+const topics = ['All', 'Smuggling', 'Crimes 1700–1900', 'Aims of Punishment', 'Law Enforcement', 'Whitechapel'];
+
+function getFiltered() {
+  return activeTopic === 'All' ? [...ALL_CARDS] : ALL_CARDS.filter(c => c.topic === activeTopic);
+}
+
+function buildTopicBar() {
+  const bar = document.getElementById('topicBar');
+  bar.innerHTML = '';
+  topics.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'topic-btn' + (t === activeTopic ? ' active' : '');
+    btn.textContent = t;
+    btn.onclick = () => { activeTopic = t; current = 0; deck = getFiltered(); renderCard(true); buildTopicBar(); };
+    bar.appendChild(btn);
+  });
+}
+
+function renderCard(animate = false) {
+  const scene = document.getElementById('scene');
+  isFlipped = false;
+  scene.classList.remove('flipped');
+  if (animate) { scene.classList.remove('animate-in'); void scene.offsetWidth; scene.classList.add('animate-in'); }
+
+  const card = deck[current];
+  document.getElementById('frontTopic').textContent = card.topic;
+  document.getElementById('backTopic').textContent = card.topic;
+  document.getElementById('cardQ').textContent = card.q;
+  document.getElementById('cardA').innerHTML = card.a;
+  const label = `${current + 1} / ${deck.length}`;
+  document.getElementById('cardNum').textContent = label;
+  document.getElementById('cardNumBack').textContent = label;
+  document.getElementById('progressText').textContent = `Card ${current + 1} of ${deck.length}`;
+  document.getElementById('progressFill').style.width = ((current + 1) / deck.length * 100) + '%';
+  document.getElementById('prevBtn').disabled = current === 0;
+}
+
+function flipCard() {
+  isFlipped = !isFlipped;
+  document.getElementById('scene').classList.toggle('flipped', isFlipped);
+}
+
+function nextCard() {
+  if (current < deck.length - 1) { current++; renderCard(true); }
+}
+
+function prevCard() {
+  if (current > 0) { current--; renderCard(true); }
+}
+
+function shuffle() {
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+  current = 0;
+  renderCard(true);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') nextCard();
+  else if (e.key === 'ArrowLeft') prevCard();
+  else if (e.key === ' ') { e.preventDefault(); flipCard(); }
+});
+
+buildTopicBar();
+deck = getFiltered();
+renderCard();
+</script>
+</body>
+</html>
