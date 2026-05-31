@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maths Flashcards — Year 10</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #06080f;
+    --card-bg: #0a0e18;
+    --accent: #4f9eff;
+    --accent2: #a78bfa;
+    --text: #dce8ff;
+    --muted: #5a6680;
+    --mastered: #ffd166;
+    --border: rgba(79,158,255,0.2);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+    background-image: radial-gradient(ellipse at 20% 20%, rgba(167,139,250,0.1) 0%, transparent 55%),
+                      radial-gradient(ellipse at 80% 80%, rgba(79,158,255,0.08) 0%, transparent 55%);
+  }
+  header { text-align: center; margin-bottom: 2.5rem; }
+  .subject-tag { font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 0.25em; color: var(--accent); text-transform: uppercase; border: 1px solid var(--border); padding: 0.3rem 0.8rem; border-radius: 2px; display: inline-block; margin-bottom: 0.8rem; }
+  h1 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .stats { font-family: 'Space Mono', monospace; font-size: 0.78rem; color: var(--muted); margin-top: 0.5rem; }
+  .stats span { color: var(--accent); }
+  .scene { width: min(480px, 95vw); height: 290px; perspective: 1000px; cursor: pointer; margin-bottom: 2rem; }
+  .card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.55s cubic-bezier(.4,0,.2,1); }
+  .card.flipped { transform: rotateY(180deg); }
+  .face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; border: 1px solid var(--border); }
+  .front { background: var(--card-bg); background-image: linear-gradient(135deg, rgba(79,158,255,0.04), rgba(167,139,250,0.04)); }
+  .back { background: linear-gradient(135deg, rgba(79,158,255,0.07), rgba(167,139,250,0.1)); transform: rotateY(180deg); border-color: rgba(79,158,255,0.35); }
+  .face-label { font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; position: absolute; top: 1rem; left: 1.2rem; }
+  .question-text { font-family: 'Space Mono', monospace; font-size: clamp(0.9rem, 2.5vw, 1.1rem); font-weight: 700; line-height: 1.6; }
+  .answer-text { font-family: 'Space Mono', monospace; font-size: clamp(0.82rem, 2.2vw, 1rem); line-height: 1.7; color: #b8d4ff; }
+  .flip-hint { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--muted); position: absolute; bottom: 1rem; right: 1.2rem; }
+  .controls { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; width: min(480px, 95vw); margin-bottom: 2rem; }
+  button { font-family: 'Space Mono', monospace; font-size: 0.75rem; letter-spacing: 0.1em; border: none; border-radius: 8px; padding: 0.75rem 1.4rem; cursor: pointer; transition: all 0.2s; text-transform: uppercase; }
+  .btn-shuffle { background: transparent; border: 1px solid var(--border); color: var(--accent); flex: 1; }
+  .btn-shuffle:hover { background: rgba(79,158,255,0.07); }
+  .btn-mastered { background: rgba(255,209,102,0.08); border: 1px solid rgba(255,209,102,0.25); color: var(--mastered); flex: 1; }
+  .btn-mastered:hover { background: rgba(255,209,102,0.15); }
+  .btn-nav { background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.25); color: #d4c5ff; flex: 1; }
+  .btn-nav:hover { background: rgba(167,139,250,0.2); }
+  .btn-reset { background: transparent; border: 1px solid rgba(255,80,80,0.25); color: #ff8080; width: 100%; }
+  .btn-reset:hover { background: rgba(255,80,80,0.08); }
+  .progress-bar { width: min(480px, 95vw); height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; margin-bottom: 1.5rem; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width 0.4s ease; }
+  .mastered-list { width: min(480px, 95vw); margin-top: 1rem; }
+  .mastered-list h3 { font-size: 0.7rem; letter-spacing: 0.2em; color: var(--mastered); font-family: 'Space Mono', monospace; text-transform: uppercase; margin-bottom: 0.8rem; }
+  .mastered-item { font-size: 0.82rem; color: var(--muted); padding: 0.4rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center; gap: 0.5rem; }
+  .mastered-item::before { content: '✓'; color: var(--mastered); font-size: 0.75rem; }
+  .done-msg { text-align: center; padding: 3rem 2rem; background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border); width: min(480px, 95vw); }
+  .done-msg h2 { font-size: 1.8rem; color: var(--mastered); margin-bottom: 0.5rem; }
+  .done-msg p { color: var(--muted); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<header>
+  <div class="subject-tag">Year 10 · Summer Exams</div>
+  <h1>∑ Maths</h1>
+  <div class="stats">Card <span id="currentNum">1</span> of <span id="totalNum">1</span> remaining</div>
+</header>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div id="mainArea">
+  <div class="scene" onclick="flipCard()">
+    <div class="card" id="card">
+      <div class="face front">
+        <div class="face-label">Question</div>
+        <div class="question-text" id="questionText"></div>
+        <div class="flip-hint">click to reveal →</div>
+      </div>
+      <div class="face back">
+        <div class="face-label">Answer</div>
+        <div class="answer-text" id="answerText"></div>
+        <div class="flip-hint">click to flip back</div>
+      </div>
+    </div>
+  </div>
+  <div class="controls">
+    <button class="btn-nav" onclick="navigate(-1)">◀ Prev</button>
+    <button class="btn-nav" onclick="navigate(1)">Next ▶</button>
+    <button class="btn-shuffle" onclick="shuffleCards()">⇄ Shuffle</button>
+    <button class="btn-mastered" onclick="markMastered()">✓ Mastered</button>
+    <button class="btn-reset" onclick="resetAll()">↺ Reset All Cards</button>
+  </div>
+</div>
+<div class="done-msg" id="doneMsg" style="display:none">
+  <h2>🎉 All Mastered!</h2>
+  <p>You've mastered all Maths cards. Outstanding!</p>
+  <button class="btn-reset" style="margin-top:1rem" onclick="resetAll()">↺ Start Again</button>
+</div>
+<div class="mastered-list" id="masteredList" style="display:none">
+  <h3>✓ Mastered Cards</h3>
+  <div id="masteredItems"></div>
+</div>
+<script>
+const allCards = [
+  {q:"What is the formula for the area of a circle?", a:"Area = π × r²\nWhere r = radius. Area is in square units (e.g. cm²)."},
+  {q:"What is the formula for the circumference of a circle?", a:"Circumference = 2πr = πd\nWhere r = radius, d = diameter."},
+  {q:"What is the formula for the area of a trapezium?", a:"Area = ½ × (a + b) × h\nWhere a and b are the parallel sides and h is the perpendicular height."},
+  {q:"State Pythagoras' Theorem.", a:"a² + b² = c²\nWhere c is the hypotenuse (longest side opposite the right angle) of a right-angled triangle."},
+  {q:"What are the trigonometric ratios (SOHCAHTOA)?", a:"SOH: sin θ = Opposite / Hypotenuse\nCAH: cos θ = Adjacent / Hypotenuse\nTOA: tan θ = Opposite / Adjacent"},
+  {q:"What is the quadratic formula?", a:"x = (−b ± √(b² − 4ac)) / 2a\nUsed to solve ax² + bx + c = 0. The discriminant (b² − 4ac) tells you how many solutions."},
+  {q:"How do you complete the square for x² + bx + c?", a:"x² + bx + c = (x + b/2)² − (b/2)² + c\nMove the constant, then rewrite the bracket. Useful for finding the vertex of a parabola."},
+  {q:"What is the equation of a straight line?", a:"y = mx + c\nm = gradient (rise over run), c = y-intercept. Parallel lines have equal gradients; perpendicular lines have gradients that multiply to −1."},
+  {q:"How do you find the gradient between two points?", a:"Gradient m = (y₂ − y₁) / (x₂ − x₁)\nChange in y divided by change in x (rise over run)."},
+  {q:"What is the difference between a factor and a multiple?", a:"Factor: a number that divides exactly into another (e.g. 4 is a factor of 12). Multiple: result of multiplying a number (e.g. 12, 24, 36 are multiples of 12)."},
+  {q:"How do you find the HCF and LCM?", a:"HCF (Highest Common Factor): largest number that divides into both. LCM (Lowest Common Multiple): smallest number both divide into. Use prime factor trees and Venn diagrams."},
+  {q:"What is a prime number?", a:"A number with exactly two factors: 1 and itself. First primes: 2, 3, 5, 7, 11, 13, 17, 19, 23... Note: 1 is NOT prime."},
+  {q:"How do you calculate percentage change?", a:"% change = (new value − original value) / original value × 100\nPositive = increase; negative = decrease."},
+  {q:"What is standard form?", a:"A × 10ⁿ where 1 ≤ A < 10 and n is an integer. E.g. 3,400,000 = 3.4 × 10⁶. Used for very large or very small numbers."},
+  {q:"What are the rules for indices (powers)?", a:"aᵐ × aⁿ = aᵐ⁺ⁿ | aᵐ ÷ aⁿ = aᵐ⁻ⁿ | (aᵐ)ⁿ = aᵐⁿ | a⁰ = 1 | a⁻ⁿ = 1/aⁿ | a^(1/n) = ⁿ√a"},
+  {q:"How do you expand double brackets?", a:"Use FOIL: First, Outer, Inner, Last.\n(x + a)(x + b) = x² + bx + ax + ab = x² + (a+b)x + ab"},
+  {q:"How do you factorise a quadratic x² + bx + c?", a:"Find two numbers that ADD to b and MULTIPLY to c.\nE.g. x² + 5x + 6 → (x+2)(x+3) because 2+3=5 and 2×3=6."},
+  {q:"What is the difference between mean, median, mode and range?", a:"Mean: sum ÷ count. Median: middle value when ordered. Mode: most frequent value. Range: largest − smallest. Used to summarise data."},
+  {q:"What is probability? How do you calculate it?", a:"Probability = number of favourable outcomes / total number of possible outcomes. Values range from 0 (impossible) to 1 (certain)."},
+  {q:"What is the formula for the volume of a cylinder?", a:"V = πr²h\nWhere r = radius and h = height. Units are cubed (e.g. cm³)."},
+  {q:"What is the formula for the volume of a cone?", a:"V = (1/3)πr²h\nOne-third of the volume of a cylinder with the same radius and height."},
+  {q:"What is the formula for the surface area of a sphere?", a:"Surface area = 4πr²\nVolume of sphere = (4/3)πr³"},
+  {q:"What is a ratio and how do you use it?", a:"A ratio compares quantities in the same units. To divide in a ratio, add the parts, divide the total, then multiply each part. E.g. 3:2 from £50 → £30 and £20."},
+  {q:"What is direct and inverse proportion?", a:"Direct: y ∝ x → y = kx (one increases, so does the other). Inverse: y ∝ 1/x → y = k/x (one increases, the other decreases). Find k using given values."},
+  {q:"How do you solve simultaneous equations?", a:"Elimination: multiply equations so a variable has the same coefficient, then add or subtract to eliminate it. Substitution: rearrange one equation and substitute into the other."},
+  {q:"What is the sine rule?", a:"a/sin A = b/sin B = c/sin C\nUsed in non-right triangles when you know two angles and a side, or two sides and a non-included angle."},
+  {q:"What is the cosine rule?", a:"a² = b² + c² − 2bc cos A\nUsed in non-right triangles when you know two sides and the included angle, or all three sides."},
+  {q:"What is the area of a non-right triangle?", a:"Area = ½ ab sin C\nWhere a and b are two sides and C is the included angle between them."},
+  {q:"What is a vector?", a:"A quantity with both magnitude and direction, written as a column vector or using bold/underlined letters. Adding vectors: add components. Scalar multiplication: multiply both components."},
+  {q:"How do you find the nth term of a linear sequence?", a:"Find the common difference (d). nth term = dn + (first term − d). E.g. 5, 8, 11, 14... → d=3, nth term = 3n + 2."},
+  {q:"What is a geometric sequence and how do you find the nth term?", a:"A sequence with a constant ratio (r) between terms. nth term = ar^(n−1) where a = first term. E.g. 2, 6, 18, 54... → 2 × 3^(n−1)."},
+  {q:"What are the circle theorems?", a:"1. Angle in semicircle = 90°. 2. Angles in same segment equal. 3. Opposite angles in cyclic quadrilateral = 180°. 4. Tangent meets radius at 90°. 5. Angle at centre = 2× angle at circumference."},
+  {q:"What is the difference between theoretical and experimental probability?", a:"Theoretical: calculated from equally likely outcomes. Experimental (relative frequency): based on actual results of repeated trials. More trials → closer to theoretical probability."},
+  {q:"How do you multiply and divide fractions?", a:"Multiply: multiply numerators together and denominators together. Divide: flip the second fraction (find its reciprocal) then multiply. E.g. 2/3 ÷ 4/5 = 2/3 × 5/4 = 10/12 = 5/6."},
+  {q:"What is the difference between a histogram and a bar chart?", a:"Bar chart: frequency on y-axis, bars can be separate, used for discrete/categorical data. Histogram: frequency DENSITY on y-axis, no gaps, used for continuous grouped data. Area = frequency."},
+];
+
+let deck=[], masteredCards=[], current=0, isFlipped=false;
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+function init(){deck=shuffle([...allCards]);current=0;showCard();}
+function showCard(){
+  document.getElementById('card').classList.remove('flipped');isFlipped=false;
+  if(!deck.length){document.getElementById('mainArea').style.display='none';document.getElementById('doneMsg').style.display='block';updateProgress();return;}
+  document.getElementById('mainArea').style.display='block';document.getElementById('doneMsg').style.display='none';
+  document.getElementById('questionText').textContent=deck[current].q;
+  document.getElementById('answerText').textContent=deck[current].a;
+  document.getElementById('currentNum').textContent=current+1;
+  document.getElementById('totalNum').textContent=deck.length;
+  updateProgress();
+}
+function updateProgress(){document.getElementById('progressFill').style.width=(masteredCards.length/allCards.length*100)+'%';updateMasteredList();}
+function flipCard(){isFlipped=!isFlipped;document.getElementById('card').classList.toggle('flipped',isFlipped);}
+function navigate(dir){current=(current+dir+deck.length)%deck.length;showCard();}
+function shuffleCards(){shuffle(deck);current=0;showCard();}
+function markMastered(){if(!deck.length)return;masteredCards.push(deck.splice(current,1)[0]);if(current>=deck.length)current=Math.max(0,deck.length-1);showCard();}
+function resetAll(){masteredCards=[];deck=shuffle([...allCards]);current=0;document.getElementById('masteredList').style.display='none';showCard();}
+function updateMasteredList(){const list=document.getElementById('masteredList');if(!masteredCards.length){list.style.display='none';return;}list.style.display='block';document.getElementById('masteredItems').innerHTML=masteredCards.map(c=>`<div class="mastered-item">${c.q}</div>`).join('');}
+init();
+</script>
+</body>
+</html>

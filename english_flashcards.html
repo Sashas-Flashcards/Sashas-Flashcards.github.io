@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>English Flashcards — Year 10</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Playfair+Display:wght@500;700;900&family=Syne:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0a06;
+    --card-bg: #16100a;
+    --accent: #ffb347;
+    --accent2: #ff6b35;
+    --text: #f0e6d8;
+    --muted: #7d6a56;
+    --mastered: #a8d8ea;
+    --border: rgba(255,179,71,0.2);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+    background-image: radial-gradient(ellipse at 20% 20%, rgba(255,107,53,0.1) 0%, transparent 55%),
+                      radial-gradient(ellipse at 80% 80%, rgba(255,179,71,0.08) 0%, transparent 55%);
+  }
+  header { text-align: center; margin-bottom: 2.5rem; }
+  .subject-tag { font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 0.25em; color: var(--accent); text-transform: uppercase; border: 1px solid var(--border); padding: 0.3rem 0.8rem; border-radius: 2px; display: inline-block; margin-bottom: 0.8rem; }
+  h1 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 900; font-family: 'Playfair Display', serif; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .stats { font-family: 'Space Mono', monospace; font-size: 0.78rem; color: var(--muted); margin-top: 0.5rem; }
+  .stats span { color: var(--accent); }
+  .scene { width: min(480px, 95vw); height: 300px; perspective: 1000px; cursor: pointer; margin-bottom: 2rem; }
+  .card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.55s cubic-bezier(.4,0,.2,1); }
+  .card.flipped { transform: rotateY(180deg); }
+  .face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; border: 1px solid var(--border); }
+  .front { background: var(--card-bg); background-image: linear-gradient(135deg, rgba(255,179,71,0.04), rgba(255,107,53,0.04)); }
+  .back { background: linear-gradient(135deg, rgba(255,179,71,0.07), rgba(255,107,53,0.1)); transform: rotateY(180deg); border-color: rgba(255,179,71,0.35); }
+  .face-label { font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; position: absolute; top: 1rem; left: 1.2rem; }
+  .question-text { font-family: 'Playfair Display', serif; font-size: clamp(1rem, 3vw, 1.2rem); font-weight: 700; line-height: 1.5; }
+  .answer-text { font-size: clamp(0.88rem, 2.5vw, 1.05rem); line-height: 1.7; color: #ffe8c0; }
+  .flip-hint { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--muted); position: absolute; bottom: 1rem; right: 1.2rem; }
+  .controls { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; width: min(480px, 95vw); margin-bottom: 2rem; }
+  button { font-family: 'Space Mono', monospace; font-size: 0.75rem; letter-spacing: 0.1em; border: none; border-radius: 8px; padding: 0.75rem 1.4rem; cursor: pointer; transition: all 0.2s; text-transform: uppercase; }
+  .btn-shuffle { background: transparent; border: 1px solid var(--border); color: var(--accent); flex: 1; }
+  .btn-shuffle:hover { background: rgba(255,179,71,0.07); }
+  .btn-mastered { background: rgba(168,216,234,0.08); border: 1px solid rgba(168,216,234,0.25); color: var(--mastered); flex: 1; }
+  .btn-mastered:hover { background: rgba(168,216,234,0.15); }
+  .btn-nav { background: rgba(255,107,53,0.1); border: 1px solid rgba(255,107,53,0.25); color: #ffbda8; flex: 1; }
+  .btn-nav:hover { background: rgba(255,107,53,0.2); }
+  .btn-reset { background: transparent; border: 1px solid rgba(255,80,80,0.25); color: #ff8080; width: 100%; }
+  .btn-reset:hover { background: rgba(255,80,80,0.08); }
+  .progress-bar { width: min(480px, 95vw); height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; margin-bottom: 1.5rem; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width 0.4s ease; }
+  .mastered-list { width: min(480px, 95vw); margin-top: 1rem; }
+  .mastered-list h3 { font-size: 0.7rem; letter-spacing: 0.2em; color: var(--mastered); font-family: 'Space Mono', monospace; text-transform: uppercase; margin-bottom: 0.8rem; }
+  .mastered-item { font-size: 0.82rem; color: var(--muted); padding: 0.4rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center; gap: 0.5rem; }
+  .mastered-item::before { content: '✓'; color: var(--mastered); font-size: 0.75rem; }
+  .done-msg { text-align: center; padding: 3rem 2rem; background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border); width: min(480px, 95vw); }
+  .done-msg h2 { font-size: 1.8rem; color: var(--mastered); margin-bottom: 0.5rem; font-family: 'Playfair Display', serif; }
+  .done-msg p { color: var(--muted); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<header>
+  <div class="subject-tag">Year 10 · Summer Exams</div>
+  <h1>📖 English</h1>
+  <div class="stats">Card <span id="currentNum">1</span> of <span id="totalNum">1</span> remaining</div>
+</header>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div id="mainArea">
+  <div class="scene" onclick="flipCard()">
+    <div class="card" id="card">
+      <div class="face front">
+        <div class="face-label">Question</div>
+        <div class="question-text" id="questionText"></div>
+        <div class="flip-hint">click to reveal →</div>
+      </div>
+      <div class="face back">
+        <div class="face-label">Answer</div>
+        <div class="answer-text" id="answerText"></div>
+        <div class="flip-hint">click to flip back</div>
+      </div>
+    </div>
+  </div>
+  <div class="controls">
+    <button class="btn-nav" onclick="navigate(-1)">◀ Prev</button>
+    <button class="btn-nav" onclick="navigate(1)">Next ▶</button>
+    <button class="btn-shuffle" onclick="shuffleCards()">⇄ Shuffle</button>
+    <button class="btn-mastered" onclick="markMastered()">✓ Mastered</button>
+    <button class="btn-reset" onclick="resetAll()">↺ Reset All Cards</button>
+  </div>
+</div>
+<div class="done-msg" id="doneMsg" style="display:none">
+  <h2>All Mastered!</h2>
+  <p>You've mastered all English cards. Excellent work!</p>
+  <button class="btn-reset" style="margin-top:1rem" onclick="resetAll()">↺ Start Again</button>
+</div>
+<div class="mastered-list" id="masteredList" style="display:none">
+  <h3>✓ Mastered Cards</h3>
+  <div id="masteredItems"></div>
+</div>
+<script>
+const allCards = [
+  // Literary techniques
+  {q:"What is a metaphor?", a:"A direct comparison between two things, stating one thing IS another. E.g. 'The world is a stage.' Unlike a simile, it doesn't use 'like' or 'as'."},
+  {q:"What is a simile?", a:"A comparison using 'like' or 'as'. E.g. 'She was as cold as ice.' Creates vivid imagery by comparing two different things."},
+  {q:"What is personification?", a:"Giving human qualities to non-human things or abstract ideas. E.g. 'The wind whispered through the trees.'"},
+  {q:"What is alliteration?", a:"The repetition of the same consonant sound at the start of closely placed words. E.g. 'Peter Piper picked.' Creates rhythm and draws attention."},
+  {q:"What is sibilance?", a:"A form of alliteration using repeated 's' sounds to create a soft, hissing effect. E.g. 'The serpent slid silently.' Often creates a sinister or gentle mood."},
+  {q:"What is onomatopoeia?", a:"A word that sounds like what it describes. E.g. 'Bang', 'hiss', 'crash', 'sizzle'. Makes writing more vivid and sensory."},
+  {q:"What is imagery?", a:"Descriptive language that appeals to the senses (sight, sound, smell, taste, touch) to create a mental picture or sensory experience for the reader."},
+  {q:"What is symbolism?", a:"When an object, person, place or event represents something beyond its literal meaning. E.g. a dove symbolises peace; darkness symbolises evil or the unknown."},
+  {q:"What is foreshadowing?", a:"Hints or clues in the text that suggest future events. Builds tension, suspense and dramatic irony for the reader."},
+  {q:"What is dramatic irony?", a:"When the audience/reader knows something that a character does not. Creates tension, humour or pathos. E.g. the audience knows the killer is behind the door."},
+  {q:"What is a rhetorical question?", a:"A question asked for effect, not expecting an answer. Engages the reader, makes them think, and emphasises a point. E.g. 'Who wouldn't want to live in peace?'"},
+  {q:"What is anaphora?", a:"Repetition of a word or phrase at the beginning of successive clauses or sentences. E.g. 'We shall fight on the beaches, we shall fight on the seas...' Builds rhythm and emphasis."},
+  {q:"What is a motif?", a:"A recurring element (image, symbol, idea or phrase) that appears throughout a text and develops or reinforces a theme. E.g. blood in Macbeth as a motif of guilt."},
+  {q:"What is irony?", a:"A contrast between what is expected and what actually happens, or when words mean the opposite of their literal meaning. Types: verbal, situational, dramatic."},
+  {q:"What is pathetic fallacy?", a:"Giving human emotions to nature or the weather to reflect a character's feelings or the mood of a scene. E.g. a storm during a violent scene."},
+  {q:"What is juxtaposition?", a:"Placing two contrasting ideas, characters, images or settings close together to highlight the differences between them. E.g. light and dark, rich and poor."},
+  {q:"What is an oxymoron?", a:"A phrase combining two contradictory terms for effect. E.g. 'bittersweet', 'deafening silence', 'living death'. Creates tension or complexity."},
+  {q:"What is hyperbole?", a:"Deliberate exaggeration for effect, not meant to be taken literally. E.g. 'I've told you a million times.' Emphasises emotion or humour."},
+  {q:"What is enjambment?", a:"In poetry, when a sentence or phrase runs on to the next line without a pause. Creates a sense of momentum, urgency or breathlessness."},
+  {q:"What is a caesura?", a:"A pause in the middle of a line of poetry, often shown by punctuation (comma, full stop). Slows the pace and can create emphasis or a reflective mood."},
+  // Structure & form
+  {q:"What is the effect of a first-person narrator?", a:"Creates an intimate, subjective perspective — we only see what they see. Builds empathy but also unreliability. The reader is close to the character's thoughts and feelings."},
+  {q:"What is the effect of a third-person omniscient narrator?", a:"The narrator knows all characters' thoughts and feelings. Creates an objective, god-like viewpoint. Allows a wider perspective and can create dramatic irony."},
+  {q:"What is the structure of a Shakespearean sonnet?", a:"14 lines: three quatrains (ABAB CDCD EFEF) and a rhyming couplet (GG). Iambic pentameter. The volta (turn) usually occurs at the couplet or line 9."},
+  {q:"What is the difference between a soliloquy and a monologue?", a:"Soliloquy: a character speaks alone on stage — reveals private thoughts to the audience. Monologue: a long speech by one character to others, or alone, but broader than a soliloquy."},
+  // AQA English Language
+  {q:"What is the PEED/PEAL structure for analysis paragraphs?", a:"Point (make a point) → Evidence (quote from text) → Explain/Analysis (explain language/effect) → Development/Link (explore further, link to theme or context)."},
+  {q:"What should you consider when analysing language? (AQA)", a:"Word choice (connotations), literary devices, sentence structure (long/short), tone, viewpoint, and the effect on the reader. Always link to purpose and audience."},
+  {q:"What is the difference between explicit and implicit information?", a:"Explicit: directly stated in the text. Implicit: suggested or implied — you must infer meaning from clues in the text. AQA Paper 1 tests both."},
+  {q:"What techniques make writing effective for AQA Paper 1 Section B?", a:"Structural variety, varied sentence lengths, ambitious vocabulary, a range of literary techniques (metaphor, imagery, etc.), a clear narrative voice, and engaging the reader from the opening."},
+  {q:"What are the key features of a persuasive speech?", a:"Rhetorical questions, anaphora (repetition), direct address ('you'), statistics, emotive language, rule of three, counter-argument, expert opinion, call to action."},
+  {q:"What is the purpose of a newspaper article?", a:"To inform, sometimes persuade. Features: headline, subheading, byline, columns, quotes from experts/witnesses, formal language, inverted pyramid structure (most important info first)."},
+  // Context/themes
+  {q:"What are common themes in GCSE English Literature?", a:"Power and conflict, love and loss, identity, social class, prejudice, war, isolation, ambition, fate vs free will, good vs evil. Always link quotations to themes."},
+  {q:"What is the importance of context in literature analysis?", a:"Historical, social and biographical context shapes the writer's choices and meaning. AQA rewards understanding of when and why a text was written (up to 6 marks on some questions)."},
+  {q:"What is semantic field?", a:"A group of words in a text that are all related to the same topic or idea. E.g. a semantic field of war: 'battle', 'wound', 'cannon', 'defeat'. Reinforces theme and mood."},
+  {q:"What is tone in English?", a:"The overall attitude or feeling conveyed by the writer's language choices. E.g. melancholic, optimistic, bitter, satirical, sinister. Tone can shift during a text."},
+];
+
+let deck=[], masteredCards=[], current=0, isFlipped=false;
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+function init(){deck=shuffle([...allCards]);current=0;showCard();}
+function showCard(){
+  document.getElementById('card').classList.remove('flipped');isFlipped=false;
+  if(!deck.length){document.getElementById('mainArea').style.display='none';document.getElementById('doneMsg').style.display='block';updateProgress();return;}
+  document.getElementById('mainArea').style.display='block';document.getElementById('doneMsg').style.display='none';
+  document.getElementById('questionText').textContent=deck[current].q;
+  document.getElementById('answerText').textContent=deck[current].a;
+  document.getElementById('currentNum').textContent=current+1;
+  document.getElementById('totalNum').textContent=deck.length;
+  updateProgress();
+}
+function updateProgress(){document.getElementById('progressFill').style.width=(masteredCards.length/allCards.length*100)+'%';updateMasteredList();}
+function flipCard(){isFlipped=!isFlipped;document.getElementById('card').classList.toggle('flipped',isFlipped);}
+function navigate(dir){current=(current+dir+deck.length)%deck.length;showCard();}
+function shuffleCards(){shuffle(deck);current=0;showCard();}
+function markMastered(){if(!deck.length)return;masteredCards.push(deck.splice(current,1)[0]);if(current>=deck.length)current=Math.max(0,deck.length-1);showCard();}
+function resetAll(){masteredCards=[];deck=shuffle([...allCards]);current=0;document.getElementById('masteredList').style.display='none';showCard();}
+function updateMasteredList(){const list=document.getElementById('masteredList');if(!masteredCards.length){list.style.display='none';return;}list.style.display='block';document.getElementById('masteredItems').innerHTML=masteredCards.map(c=>`<div class="mastered-item">${c.q}</div>`).join('');}
+init();
+</script>
+</body>
+</html>

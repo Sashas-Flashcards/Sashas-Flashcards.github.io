@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biology Flashcards — Year 10</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0d06;
+    --card-bg: #111508;
+    --accent: #a8ff5a;
+    --accent2: #4cde80;
+    --text: #e4edd8;
+    --muted: #6d7a5a;
+    --mastered: #ff9f43;
+    --border: rgba(168,255,90,0.18);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+    background-image: radial-gradient(ellipse at 25% 25%, rgba(76,222,128,0.1) 0%, transparent 55%),
+                      radial-gradient(ellipse at 75% 75%, rgba(168,255,90,0.07) 0%, transparent 55%);
+  }
+  header { text-align: center; margin-bottom: 2.5rem; }
+  .subject-tag { font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 0.25em; color: var(--accent); text-transform: uppercase; border: 1px solid var(--border); padding: 0.3rem 0.8rem; border-radius: 2px; display: inline-block; margin-bottom: 0.8rem; }
+  h1 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .stats { font-family: 'Space Mono', monospace; font-size: 0.78rem; color: var(--muted); margin-top: 0.5rem; }
+  .stats span { color: var(--accent); }
+  .scene { width: min(480px, 95vw); height: 280px; perspective: 1000px; cursor: pointer; margin-bottom: 2rem; }
+  .card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.55s cubic-bezier(.4,0,.2,1); }
+  .card.flipped { transform: rotateY(180deg); }
+  .face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; border: 1px solid var(--border); }
+  .front { background: var(--card-bg); background-image: linear-gradient(135deg, rgba(168,255,90,0.04), rgba(76,222,128,0.04)); }
+  .back { background: linear-gradient(135deg, rgba(168,255,90,0.07), rgba(76,222,128,0.1)); transform: rotateY(180deg); border-color: rgba(168,255,90,0.3); }
+  .face-label { font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; position: absolute; top: 1rem; left: 1.2rem; }
+  .question-text { font-size: clamp(1rem, 3vw, 1.25rem); font-weight: 600; line-height: 1.5; }
+  .answer-text { font-size: clamp(0.9rem, 2.5vw, 1.1rem); line-height: 1.6; color: #d4ffb0; }
+  .flip-hint { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--muted); position: absolute; bottom: 1rem; right: 1.2rem; }
+  .controls { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; width: min(480px, 95vw); margin-bottom: 2rem; }
+  button { font-family: 'Space Mono', monospace; font-size: 0.75rem; letter-spacing: 0.1em; border: none; border-radius: 8px; padding: 0.75rem 1.4rem; cursor: pointer; transition: all 0.2s; text-transform: uppercase; }
+  .btn-shuffle { background: transparent; border: 1px solid var(--border); color: var(--accent); flex: 1; }
+  .btn-shuffle:hover { background: rgba(168,255,90,0.07); }
+  .btn-mastered { background: rgba(255,159,67,0.08); border: 1px solid rgba(255,159,67,0.25); color: var(--mastered); flex: 1; }
+  .btn-mastered:hover { background: rgba(255,159,67,0.15); }
+  .btn-nav { background: rgba(76,222,128,0.1); border: 1px solid rgba(76,222,128,0.25); color: #a8ffca; flex: 1; }
+  .btn-nav:hover { background: rgba(76,222,128,0.2); }
+  .btn-reset { background: transparent; border: 1px solid rgba(255,80,80,0.25); color: #ff8080; width: 100%; }
+  .btn-reset:hover { background: rgba(255,80,80,0.08); }
+  .progress-bar { width: min(480px, 95vw); height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; margin-bottom: 1.5rem; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width 0.4s ease; }
+  .mastered-list { width: min(480px, 95vw); margin-top: 1rem; }
+  .mastered-list h3 { font-size: 0.7rem; letter-spacing: 0.2em; color: var(--mastered); font-family: 'Space Mono', monospace; text-transform: uppercase; margin-bottom: 0.8rem; }
+  .mastered-item { font-size: 0.82rem; color: var(--muted); padding: 0.4rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center; gap: 0.5rem; }
+  .mastered-item::before { content: '✓'; color: var(--mastered); font-size: 0.75rem; }
+  .done-msg { text-align: center; padding: 3rem 2rem; background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border); width: min(480px, 95vw); }
+  .done-msg h2 { font-size: 1.8rem; color: var(--mastered); margin-bottom: 0.5rem; }
+  .done-msg p { color: var(--muted); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<header>
+  <div class="subject-tag">Year 10 · Summer Exams</div>
+  <h1>🌿 Biology</h1>
+  <div class="stats">Card <span id="currentNum">1</span> of <span id="totalNum">1</span> remaining</div>
+</header>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div id="mainArea">
+  <div class="scene" onclick="flipCard()">
+    <div class="card" id="card">
+      <div class="face front">
+        <div class="face-label">Question</div>
+        <div class="question-text" id="questionText"></div>
+        <div class="flip-hint">click to reveal →</div>
+      </div>
+      <div class="face back">
+        <div class="face-label">Answer</div>
+        <div class="answer-text" id="answerText"></div>
+        <div class="flip-hint">click to flip back</div>
+      </div>
+    </div>
+  </div>
+  <div class="controls">
+    <button class="btn-nav" onclick="navigate(-1)">◀ Prev</button>
+    <button class="btn-nav" onclick="navigate(1)">Next ▶</button>
+    <button class="btn-shuffle" onclick="shuffleCards()">⇄ Shuffle</button>
+    <button class="btn-mastered" onclick="markMastered()">✓ Mastered</button>
+    <button class="btn-reset" onclick="resetAll()">↺ Reset All Cards</button>
+  </div>
+</div>
+<div class="done-msg" id="doneMsg" style="display:none">
+  <h2>🎉 All Mastered!</h2>
+  <p>You've mastered all Biology cards. Well done!</p>
+  <button class="btn-reset" style="margin-top:1rem" onclick="resetAll()">↺ Start Again</button>
+</div>
+<div class="mastered-list" id="masteredList" style="display:none">
+  <h3>✓ Mastered Cards</h3>
+  <div id="masteredItems"></div>
+</div>
+<script>
+const allCards = [
+  {q:"What are the seven life processes? (MRSGREN)", a:"Movement, Respiration, Sensitivity, Growth, Reproduction, Excretion, Nutrition. All living organisms carry out these processes."},
+  {q:"What is the structure of a cell? (plant vs animal)", a:"Both: nucleus, cytoplasm, cell membrane, mitochondria, ribosomes. Plant only: cell wall (cellulose), vacuole, chloroplasts."},
+  {q:"What is the function of the nucleus?", a:"Contains DNA and controls the activities of the cell, including cell division and protein synthesis."},
+  {q:"What is the function of mitochondria?", a:"Site of aerobic respiration — produces ATP (energy) for the cell. More mitochondria = more active cell."},
+  {q:"What is the function of chloroplasts?", a:"Site of photosynthesis in plant cells. Contains chlorophyll, which absorbs light energy to make glucose."},
+  {q:"What is diffusion?", a:"The net movement of particles from a region of higher concentration to lower concentration (down a concentration gradient). Passive — no energy needed."},
+  {q:"What is osmosis?", a:"The net movement of water molecules through a partially permeable membrane from a dilute solution to a more concentrated solution, down the water potential gradient."},
+  {q:"What is active transport?", a:"Movement of substances against a concentration gradient, using energy (ATP) from respiration. Requires carrier proteins."},
+  {q:"Write the equation for photosynthesis.", a:"Carbon dioxide + Water → Glucose + Oxygen. 6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂. Needs light energy and chlorophyll."},
+  {q:"What factors affect the rate of photosynthesis?", a:"Light intensity, carbon dioxide concentration, temperature, and water availability. Any of these can be a limiting factor."},
+  {q:"Write the equation for aerobic respiration.", a:"Glucose + Oxygen → Carbon dioxide + Water (+ energy as ATP). C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O. Occurs in mitochondria."},
+  {q:"What is anaerobic respiration in humans?", a:"Glucose → Lactic acid (+ small amount of energy). Occurs when oxygen is insufficient. Causes muscle fatigue and oxygen debt."},
+  {q:"What is the role of enzymes?", a:"Biological catalysts made of protein. Speed up chemical reactions in cells without being used up. Each enzyme has a specific active site."},
+  {q:"What is the lock and key model of enzyme action?", a:"The substrate fits into the enzyme's active site (like a key into a lock). If the shape changes (denaturation), the enzyme no longer works."},
+  {q:"What affects enzyme activity?", a:"Temperature (optimum ~37°C in humans — above this denatures), pH (each enzyme has an optimum pH), substrate concentration."},
+  {q:"What are the components of blood?", a:"Red blood cells (carry oxygen via haemoglobin), white blood cells (immune defence), platelets (clotting), plasma (liquid — carries nutrients, CO₂, hormones, waste)."},
+  {q:"What is the structure and function of the heart?", a:"A four-chambered muscular pump. Right side: receives deoxygenated blood, pumps to lungs. Left side: receives oxygenated blood, pumps to body. Valves prevent backflow."},
+  {q:"What is the difference between arteries, veins and capillaries?", a:"Arteries: thick walls, carry blood away from heart (high pressure). Veins: thin walls, valves, carry blood to heart. Capillaries: one cell thick, site of gas exchange."},
+  {q:"What is the structure of the lungs and how does gas exchange work?", a:"Alveoli: tiny air sacs with thin walls, moist, rich blood supply, large surface area. O₂ diffuses into blood; CO₂ diffuses out, down concentration gradients."},
+  {q:"What is the nervous system?", a:"The central nervous system (brain + spinal cord) and peripheral nerves. Detects stimuli via receptors, coordinates responses via effectors (muscles/glands)."},
+  {q:"What is a reflex arc?", a:"Stimulus → Receptor → Sensory neuron → Relay neuron (spinal cord) → Motor neuron → Effector → Response. Fast, involuntary and does not involve the brain."},
+  {q:"What is the endocrine system?", a:"A system of glands (e.g. pancreas, adrenal, thyroid, pituitary) that secrete hormones into the blood to regulate body functions. Slower but longer-lasting than nerve signals."},
+  {q:"How does the body regulate blood glucose?", a:"High glucose: pancreas secretes insulin → cells absorb glucose → levels fall. Low glucose: glucagon secreted → liver converts glycogen to glucose → levels rise."},
+  {q:"What is DNA and what does it do?", a:"Deoxyribonucleic acid — a double helix polymer of nucleotides. Carries genetic instructions for making proteins and is the basis of inheritance."},
+  {q:"What is the difference between mitosis and meiosis?", a:"Mitosis: produces 2 genetically identical diploid cells (for growth/repair). Meiosis: produces 4 genetically unique haploid cells (gametes for sexual reproduction)."},
+  {q:"What are dominant and recessive alleles?", a:"Dominant: always expressed even if only one copy is present. Recessive: only expressed when two copies are present (homozygous recessive). E.g. B (dominant), b (recessive)."},
+  {q:"What is natural selection?", a:"Individuals with advantageous inherited traits are more likely to survive and reproduce. Over many generations, beneficial alleles become more common in the population."},
+  {q:"What is the difference between a pathogen, a disease and a symptom?", a:"Pathogen: microorganism causing disease (bacterium, virus, fungus, protist). Disease: the condition caused. Symptom: what the patient experiences (e.g. fever, rash)."},
+  {q:"How do vaccines work?", a:"Contain dead/weakened pathogens or antigens. The immune system produces antibodies and memory cells. On future exposure, a faster, stronger response destroys the pathogen."},
+  {q:"What is the difference between bacteria and viruses?", a:"Bacteria: single-celled living organisms — can be treated with antibiotics. Viruses: non-living, replicate inside host cells — treated with antivirals, not antibiotics."},
+  {q:"What is the structure of a plant and its specialised cells?", a:"Root hair cells (large surface area for water/mineral absorption), xylem (water transport, dead cells), phloem (sugar transport, living cells), guard cells (control stomata)."},
+  {q:"What is transpiration?", a:"Loss of water vapour from plant leaves through stomata. Creates a 'pull' that draws water up through xylem. Rate increases with: temperature, light, wind, low humidity."},
+  {q:"What is a food chain and food web?", a:"Food chain: shows feeding relationships (producer → primary consumer → secondary consumer). Food web: multiple interconnected chains. Energy decreases at each trophic level (~10% transferred)."},
+  {q:"What is the carbon cycle?", a:"Carbon moves through the environment via photosynthesis (removes CO₂), respiration, decomposition, combustion, and ocean absorption. Maintains CO₂ balance in the atmosphere."},
+  {q:"What is homeostasis?", a:"The maintenance of a constant internal environment (e.g. body temperature ~37°C, blood glucose, water balance). Controlled by negative feedback mechanisms."},
+];
+
+let deck=[], masteredCards=[], current=0, isFlipped=false;
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+function init(){deck=shuffle([...allCards]);current=0;showCard();}
+function showCard(){
+  document.getElementById('card').classList.remove('flipped');isFlipped=false;
+  if(!deck.length){document.getElementById('mainArea').style.display='none';document.getElementById('doneMsg').style.display='block';updateProgress();return;}
+  document.getElementById('mainArea').style.display='block';document.getElementById('doneMsg').style.display='none';
+  document.getElementById('questionText').textContent=deck[current].q;
+  document.getElementById('answerText').textContent=deck[current].a;
+  document.getElementById('currentNum').textContent=current+1;
+  document.getElementById('totalNum').textContent=deck.length;
+  updateProgress();
+}
+function updateProgress(){document.getElementById('progressFill').style.width=(masteredCards.length/allCards.length*100)+'%';updateMasteredList();}
+function flipCard(){isFlipped=!isFlipped;document.getElementById('card').classList.toggle('flipped',isFlipped);}
+function navigate(dir){current=(current+dir+deck.length)%deck.length;showCard();}
+function shuffleCards(){shuffle(deck);current=0;showCard();}
+function markMastered(){if(!deck.length)return;masteredCards.push(deck.splice(current,1)[0]);if(current>=deck.length)current=Math.max(0,deck.length-1);showCard();}
+function resetAll(){masteredCards=[];deck=shuffle([...allCards]);current=0;document.getElementById('masteredList').style.display='none';showCard();}
+function updateMasteredList(){const list=document.getElementById('masteredList');if(!masteredCards.length){list.style.display='none';return;}list.style.display='block';document.getElementById('masteredItems').innerHTML=masteredCards.map(c=>`<div class="mastered-item">${c.q}</div>`).join('');}
+init();
+</script>
+</body>
+</html>

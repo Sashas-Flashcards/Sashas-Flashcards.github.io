@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Physics Flashcards — Year 10</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a12;
+    --card-bg: #12121e;
+    --accent: #00d4ff;
+    --accent2: #7b2fff;
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --mastered: #00ff9d;
+    --border: rgba(0,212,255,0.2);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+    background-image: radial-gradient(ellipse at 20% 20%, rgba(123,47,255,0.12) 0%, transparent 60%),
+                      radial-gradient(ellipse at 80% 80%, rgba(0,212,255,0.08) 0%, transparent 60%);
+  }
+  header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+  .subject-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+    padding: 0.3rem 0.8rem;
+    border-radius: 2px;
+    display: inline-block;
+    margin-bottom: 0.8rem;
+  }
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .stats {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 0.5rem;
+  }
+  .stats span { color: var(--accent); }
+
+  .scene {
+    width: min(480px, 95vw);
+    height: 280px;
+    perspective: 1000px;
+    cursor: pointer;
+    margin-bottom: 2rem;
+  }
+  .card {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.55s cubic-bezier(.4,0,.2,1);
+  }
+  .card.flipped { transform: rotateY(180deg); }
+  .face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .front {
+    background: var(--card-bg);
+    background-image: linear-gradient(135deg, rgba(0,212,255,0.05), rgba(123,47,255,0.05));
+  }
+  .back {
+    background: linear-gradient(135deg, rgba(0,212,255,0.08), rgba(123,47,255,0.12));
+    transform: rotateY(180deg);
+    border-color: rgba(0,212,255,0.35);
+  }
+  .face-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    position: absolute;
+    top: 1rem;
+    left: 1.2rem;
+  }
+  .question-text {
+    font-size: clamp(1rem, 3vw, 1.25rem);
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--text);
+  }
+  .answer-text {
+    font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+    line-height: 1.6;
+    color: #c8f0ff;
+    font-weight: 400;
+  }
+  .flip-hint {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    position: absolute;
+    bottom: 1rem;
+    right: 1.2rem;
+  }
+
+  .controls {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: min(480px, 95vw);
+    margin-bottom: 2rem;
+  }
+  button {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.4rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .btn-shuffle {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--accent);
+    flex: 1;
+  }
+  .btn-shuffle:hover { background: rgba(0,212,255,0.08); }
+  .btn-mastered {
+    background: rgba(0,255,157,0.1);
+    border: 1px solid rgba(0,255,157,0.3);
+    color: var(--mastered);
+    flex: 1;
+  }
+  .btn-mastered:hover { background: rgba(0,255,157,0.2); }
+  .btn-nav {
+    background: rgba(123,47,255,0.15);
+    border: 1px solid rgba(123,47,255,0.3);
+    color: #c4aaff;
+    flex: 1;
+  }
+  .btn-nav:hover { background: rgba(123,47,255,0.25); }
+  .btn-reset {
+    background: transparent;
+    border: 1px solid rgba(255,80,80,0.25);
+    color: #ff8080;
+    width: 100%;
+  }
+  .btn-reset:hover { background: rgba(255,80,80,0.08); }
+
+  .progress-bar {
+    width: min(480px, 95vw);
+    height: 4px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  .mastered-list {
+    width: min(480px, 95vw);
+    margin-top: 1rem;
+  }
+  .mastered-list h3 {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--mastered);
+    font-family: 'Space Mono', monospace;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+  }
+  .mastered-item {
+    font-size: 0.82rem;
+    color: var(--muted);
+    padding: 0.4rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .mastered-item::before { content: '✓'; color: var(--mastered); font-size: 0.75rem; }
+
+  .done-msg {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: var(--card-bg);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    width: min(480px, 95vw);
+  }
+  .done-msg h2 { font-size: 1.8rem; color: var(--mastered); margin-bottom: 0.5rem; }
+  .done-msg p { color: var(--muted); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<header>
+  <div class="subject-tag">Year 10 · Summer Exams</div>
+  <h1>⚡ Physics</h1>
+  <div class="stats">Card <span id="currentNum">1</span> of <span id="totalNum">1</span> remaining</div>
+</header>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<div id="mainArea">
+  <div class="scene" id="scene" onclick="flipCard()">
+    <div class="card" id="card">
+      <div class="face front">
+        <div class="face-label">Question</div>
+        <div class="question-text" id="questionText"></div>
+        <div class="flip-hint">click to reveal →</div>
+      </div>
+      <div class="face back">
+        <div class="face-label">Answer</div>
+        <div class="answer-text" id="answerText"></div>
+        <div class="flip-hint">click to flip back</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn-nav" onclick="navigate(-1)">◀ Prev</button>
+    <button class="btn-nav" onclick="navigate(1)">Next ▶</button>
+    <button class="btn-shuffle" onclick="shuffleCards()">⇄ Shuffle</button>
+    <button class="btn-mastered" onclick="markMastered()">✓ Mastered</button>
+    <button class="btn-reset" onclick="resetAll()">↺ Reset All Cards</button>
+  </div>
+</div>
+
+<div class="done-msg" id="doneMsg" style="display:none">
+  <h2>🎉 All Mastered!</h2>
+  <p>You've mastered all Physics cards. Great work!<br><br></p>
+  <button class="btn-reset" style="margin-top:1rem" onclick="resetAll()">↺ Start Again</button>
+</div>
+
+<div class="mastered-list" id="masteredList" style="display:none">
+  <h3>✓ Mastered Cards</h3>
+  <div id="masteredItems"></div>
+</div>
+
+<script>
+const allCards = [
+  {q:"What is Newton's First Law of Motion?", a:"An object will remain at rest or in uniform motion unless acted upon by a resultant (net) force."},
+  {q:"What is Newton's Second Law of Motion?", a:"Force = mass × acceleration. (F = ma). The greater the resultant force, the greater the acceleration."},
+  {q:"What is Newton's Third Law of Motion?", a:"Every action has an equal and opposite reaction. Forces always act in pairs on different objects."},
+  {q:"What is the equation for speed?", a:"Speed = Distance ÷ Time (v = d/t). Units: metres per second (m/s)."},
+  {q:"What is the difference between speed and velocity?", a:"Speed is a scalar (just magnitude). Velocity is a vector — it has both magnitude and direction."},
+  {q:"What is acceleration?", a:"The rate of change of velocity. a = (v − u) / t. Units: m/s²."},
+  {q:"What is the equation for work done?", a:"Work done = Force × distance moved in direction of force. W = Fd. Units: Joules (J)."},
+  {q:"State the law of conservation of energy.", a:"Energy cannot be created or destroyed — it can only be transferred from one form to another."},
+  {q:"What is the equation for kinetic energy?", a:"KE = ½ × mass × velocity². (KE = ½mv²). Units: Joules."},
+  {q:"What is gravitational potential energy?", a:"GPE = mass × gravitational field strength × height. GPE = mgh. On Earth g ≈ 9.8 N/kg."},
+  {q:"What is power?", a:"Power = Work done ÷ Time. P = W/t. Units: Watts (W). 1 W = 1 J/s."},
+  {q:"What is efficiency?", a:"Efficiency = (useful output energy ÷ total input energy) × 100%. A value between 0% and 100%."},
+  {q:"What are the main energy resources?", a:"Renewable: solar, wind, hydroelectric, tidal, geothermal, biomass. Non-renewable: coal, oil, gas, nuclear."},
+  {q:"What is Ohm's Law?", a:"Voltage = Current × Resistance. V = IR. Valid when temperature is constant."},
+  {q:"What is the unit of electrical resistance?", a:"Ohms (Ω). Resistance opposes the flow of current."},
+  {q:"What is the difference between series and parallel circuits?", a:"Series: same current throughout, voltages add up. Parallel: same voltage across branches, currents add up."},
+  {q:"What is the equation for electrical power?", a:"P = IV (Power = Current × Voltage). Also P = I²R and P = V²/R."},
+  {q:"What is the wave equation?", a:"Wave speed = frequency × wavelength. v = fλ. Units: m/s, Hz, metres."},
+  {q:"What are transverse waves? Give an example.", a:"Waves where oscillations are perpendicular to the direction of travel. Example: light, water waves."},
+  {q:"What are longitudinal waves? Give an example.", a:"Waves where oscillations are parallel to the direction of travel. Example: sound waves."},
+  {q:"What is the electromagnetic spectrum?", a:"Radio → Microwave → Infrared → Visible light → Ultraviolet → X-ray → Gamma ray. All travel at 3×10⁸ m/s in a vacuum."},
+  {q:"What is refraction?", a:"The bending of a wave as it crosses a boundary between materials of different densities, caused by a change in speed."},
+  {q:"What is the law of reflection?", a:"Angle of incidence = Angle of reflection. Both measured from the normal to the surface."},
+  {q:"What is a magnetic field?", a:"A region around a magnet where a force acts on other magnets or magnetic materials. Field lines go from north to south."},
+  {q:"What is the motor effect?", a:"When a current-carrying conductor is in a magnetic field, it experiences a force. F = BIL."},
+  {q:"What is electromagnetic induction?", a:"A changing magnetic field through a conductor induces an electromotive force (EMF) and can drive a current."},
+  {q:"What is the difference between AC and DC?", a:"DC (direct current) flows in one direction only. AC (alternating current) regularly reverses direction. UK mains is 230V AC at 50 Hz."},
+  {q:"What is radioactive decay?", a:"When an unstable atomic nucleus loses energy by emitting radiation (alpha, beta, or gamma) spontaneously and randomly."},
+  {q:"What is half-life?", a:"The time it takes for half the radioactive atoms in a sample to decay. It is constant for a given isotope."},
+  {q:"What is the difference between alpha, beta and gamma radiation?", a:"Alpha (α): helium nucleus, stopped by paper. Beta (β): fast electron, stopped by thin aluminium. Gamma (γ): EM wave, reduced by thick lead."},
+  {q:"What is the atomic number and mass number?", a:"Atomic number = number of protons. Mass number = protons + neutrons. Atomic number determines the element."},
+  {q:"What is pressure?", a:"Pressure = Force ÷ Area. P = F/A. Units: Pascals (Pa). 1 Pa = 1 N/m²."},
+  {q:"What is Hooke's Law?", a:"Force = spring constant × extension. F = ke. Valid only up to the elastic limit. Units: Newtons, N/m, metres."},
+  {q:"What is the difference between elastic and plastic deformation?", a:"Elastic: object returns to its original shape after force removed. Plastic: object is permanently deformed."},
+  {q:"What is density?", a:"Density = Mass ÷ Volume. ρ = m/V. Units: kg/m³ or g/cm³. Denser objects sink in less dense fluids."},
+];
+
+let deck = [];
+let masteredCards = [];
+let current = 0;
+let isFlipped = false;
+
+function shuffle(arr) {
+  for (let i = arr.length-1; i>0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function init() {
+  deck = shuffle([...allCards]);
+  current = 0;
+  showCard();
+}
+
+function showCard() {
+  const card = document.getElementById('card');
+  card.classList.remove('flipped');
+  isFlipped = false;
+  if (deck.length === 0) {
+    document.getElementById('mainArea').style.display = 'none';
+    document.getElementById('doneMsg').style.display = 'block';
+    updateProgress();
+    return;
+  }
+  document.getElementById('mainArea').style.display = 'block';
+  document.getElementById('doneMsg').style.display = 'none';
+  document.getElementById('questionText').textContent = deck[current].q;
+  document.getElementById('answerText').textContent = deck[current].a;
+  document.getElementById('currentNum').textContent = current + 1;
+  document.getElementById('totalNum').textContent = deck.length;
+  updateProgress();
+}
+
+function updateProgress() {
+  const total = allCards.length;
+  const done = masteredCards.length;
+  const pct = (done / total) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  updateMasteredList();
+}
+
+function flipCard() {
+  const card = document.getElementById('card');
+  isFlipped = !isFlipped;
+  card.classList.toggle('flipped', isFlipped);
+}
+
+function navigate(dir) {
+  current = (current + dir + deck.length) % deck.length;
+  showCard();
+}
+
+function shuffleCards() {
+  shuffle(deck);
+  current = 0;
+  showCard();
+}
+
+function markMastered() {
+  if (deck.length === 0) return;
+  const mastered = deck.splice(current, 1)[0];
+  masteredCards.push(mastered);
+  if (current >= deck.length) current = Math.max(0, deck.length - 1);
+  showCard();
+}
+
+function resetAll() {
+  masteredCards = [];
+  deck = shuffle([...allCards]);
+  current = 0;
+  document.getElementById('masteredList').style.display = 'none';
+  showCard();
+}
+
+function updateMasteredList() {
+  const list = document.getElementById('masteredList');
+  const items = document.getElementById('masteredItems');
+  if (masteredCards.length === 0) { list.style.display = 'none'; return; }
+  list.style.display = 'block';
+  items.innerHTML = masteredCards.map(c => `<div class="mastered-item">${c.q}</div>`).join('');
+}
+
+init();
+</script>
+</body>
+</html>

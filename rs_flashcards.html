@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RS Flashcards — Year 10</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Cormorant+Garamond:wght@400;600;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d080e;
+    --card-bg: #140a15;
+    --accent: #e879f9;
+    --accent2: #f472b6;
+    --text: #f0e4f4;
+    --muted: #7a5f80;
+    --mastered: #86efac;
+    --border: rgba(232,121,249,0.2);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+    background-image: radial-gradient(ellipse at 20% 20%, rgba(232,121,249,0.1) 0%, transparent 55%),
+                      radial-gradient(ellipse at 80% 80%, rgba(244,114,182,0.08) 0%, transparent 55%);
+  }
+  header { text-align: center; margin-bottom: 2.5rem; }
+  .subject-tag { font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 0.25em; color: var(--accent); text-transform: uppercase; border: 1px solid var(--border); padding: 0.3rem 0.8rem; border-radius: 2px; display: inline-block; margin-bottom: 0.8rem; }
+  h1 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .stats { font-family: 'Space Mono', monospace; font-size: 0.78rem; color: var(--muted); margin-top: 0.5rem; }
+  .stats span { color: var(--accent); }
+  .scene { width: min(480px, 95vw); height: 300px; perspective: 1000px; cursor: pointer; margin-bottom: 2rem; }
+  .card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.55s cubic-bezier(.4,0,.2,1); }
+  .card.flipped { transform: rotateY(180deg); }
+  .face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; border: 1px solid var(--border); }
+  .front { background: var(--card-bg); background-image: linear-gradient(135deg, rgba(232,121,249,0.04), rgba(244,114,182,0.04)); }
+  .back { background: linear-gradient(135deg, rgba(232,121,249,0.07), rgba(244,114,182,0.1)); transform: rotateY(180deg); border-color: rgba(232,121,249,0.35); }
+  .face-label { font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; position: absolute; top: 1rem; left: 1.2rem; }
+  .question-text { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.05rem, 3vw, 1.35rem); font-weight: 600; line-height: 1.55; }
+  .answer-text { font-size: clamp(0.88rem, 2.3vw, 1.05rem); line-height: 1.7; color: #f5d0ff; }
+  .flip-hint { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--muted); position: absolute; bottom: 1rem; right: 1.2rem; }
+  .controls { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; width: min(480px, 95vw); margin-bottom: 2rem; }
+  button { font-family: 'Space Mono', monospace; font-size: 0.75rem; letter-spacing: 0.1em; border: none; border-radius: 8px; padding: 0.75rem 1.4rem; cursor: pointer; transition: all 0.2s; text-transform: uppercase; }
+  .btn-shuffle { background: transparent; border: 1px solid var(--border); color: var(--accent); flex: 1; }
+  .btn-shuffle:hover { background: rgba(232,121,249,0.07); }
+  .btn-mastered { background: rgba(134,239,172,0.08); border: 1px solid rgba(134,239,172,0.25); color: var(--mastered); flex: 1; }
+  .btn-mastered:hover { background: rgba(134,239,172,0.15); }
+  .btn-nav { background: rgba(244,114,182,0.1); border: 1px solid rgba(244,114,182,0.25); color: #fbaed2; flex: 1; }
+  .btn-nav:hover { background: rgba(244,114,182,0.2); }
+  .btn-reset { background: transparent; border: 1px solid rgba(255,80,80,0.25); color: #ff8080; width: 100%; }
+  .btn-reset:hover { background: rgba(255,80,80,0.08); }
+  .progress-bar { width: min(480px, 95vw); height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; margin-bottom: 1.5rem; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width 0.4s ease; }
+  .mastered-list { width: min(480px, 95vw); margin-top: 1rem; }
+  .mastered-list h3 { font-size: 0.7rem; letter-spacing: 0.2em; color: var(--mastered); font-family: 'Space Mono', monospace; text-transform: uppercase; margin-bottom: 0.8rem; }
+  .mastered-item { font-size: 0.82rem; color: var(--muted); padding: 0.4rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center; gap: 0.5rem; }
+  .mastered-item::before { content: '✓'; color: var(--mastered); font-size: 0.75rem; }
+  .done-msg { text-align: center; padding: 3rem 2rem; background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border); width: min(480px, 95vw); }
+  .done-msg h2 { font-size: 1.8rem; color: var(--mastered); margin-bottom: 0.5rem; font-family: 'Cormorant Garamond', serif; }
+  .done-msg p { color: var(--muted); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<header>
+  <div class="subject-tag">Year 10 · Summer Exams</div>
+  <h1>☯ RS</h1>
+  <div class="stats">Card <span id="currentNum">1</span> of <span id="totalNum">1</span> remaining</div>
+</header>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div id="mainArea">
+  <div class="scene" onclick="flipCard()">
+    <div class="card" id="card">
+      <div class="face front">
+        <div class="face-label">Question</div>
+        <div class="question-text" id="questionText"></div>
+        <div class="flip-hint">click to reveal →</div>
+      </div>
+      <div class="face back">
+        <div class="face-label">Answer</div>
+        <div class="answer-text" id="answerText"></div>
+        <div class="flip-hint">click to flip back</div>
+      </div>
+    </div>
+  </div>
+  <div class="controls">
+    <button class="btn-nav" onclick="navigate(-1)">◀ Prev</button>
+    <button class="btn-nav" onclick="navigate(1)">Next ▶</button>
+    <button class="btn-shuffle" onclick="shuffleCards()">⇄ Shuffle</button>
+    <button class="btn-mastered" onclick="markMastered()">✓ Mastered</button>
+    <button class="btn-reset" onclick="resetAll()">↺ Reset All Cards</button>
+  </div>
+</div>
+<div class="done-msg" id="doneMsg" style="display:none">
+  <h2>All Mastered!</h2>
+  <p>You've mastered all RS cards. Wonderful!</p>
+  <button class="btn-reset" style="margin-top:1rem" onclick="resetAll()">↺ Start Again</button>
+</div>
+<div class="mastered-list" id="masteredList" style="display:none">
+  <h3>✓ Mastered Cards</h3>
+  <div id="masteredItems"></div>
+</div>
+<script>
+const allCards = [
+  // Christian beliefs
+  {q:"What do Christians believe about the nature of God?", a:"Christians believe in one God (monotheism) who is omnipotent (all-powerful), omniscient (all-knowing), omnipresent (everywhere), omnibenevolent (all-loving), and the creator of the universe."},
+  {q:"What is the Christian belief about the Trinity?", a:"God is three persons in one: the Father (creator), the Son (Jesus Christ, who came to Earth), and the Holy Spirit (God's presence in the world). One God, three distinct persons."},
+  {q:"What do Christians believe about the Incarnation?", a:"God became human in the person of Jesus Christ. Jesus was fully God and fully human. This is the basis of Christmas — God entering the world to save humanity."},
+  {q:"What is the Christian belief about salvation and atonement?", a:"Jesus died on the cross to atone for humanity's sins, taking the punishment humans deserved. His resurrection gives Christians hope of eternal life. Salvation is available through faith in Jesus."},
+  {q:"What do Christians believe about life after death?", a:"Christians believe in resurrection — the body will rise again. Judgement Day follows; souls go to heaven (eternal life with God) or hell (separation from God). Some also believe in purgatory (Catholic)."},
+  {q:"What is the Christian concept of sin and the Fall?", a:"Adam and Eve disobeyed God in the Garden of Eden — this is 'Original Sin'. All humans are born with a tendency to sin. Jesus came to offer redemption from sin."},
+  {q:"What do Christians believe about creation?", a:"God created the universe out of nothing ('ex nihilo') as described in Genesis. Some Christians interpret this literally (6 days); others see it as metaphorical and accept scientific accounts like the Big Bang."},
+  // Islamic beliefs
+  {q:"What are the Six Articles of Faith in Islam (Sunni)?", a:"1. Allah (God) 2. Angels (Malaikah) 3. Holy books (Kutub) 4. Prophets (Nabi/Rasul) 5. Day of Judgement (Yawm al-Din) 6. Divine Decree (Al-Qadr / predestination)."},
+  {q:"What does Tawhid mean in Islam?", a:"The oneness and unity of Allah — the most fundamental belief in Islam. Allah is one, with no partners, no equals, and no images. Shirk (associating partners with God) is the greatest sin."},
+  {q:"What are the Five Pillars of Islam?", a:"1. Shahadah (declaration of faith) 2. Salah (five daily prayers) 3. Zakah (charity, 2.5% of savings) 4. Sawm (fasting in Ramadan) 5. Hajj (pilgrimage to Makkah, once in a lifetime if able)."},
+  {q:"What do Muslims believe about the prophets?", a:"Allah sent many prophets including Ibrahim, Musa, Isa (Jesus) and Muhammad (the final prophet, 'Seal of the Prophets'). Muhammad received the Qur'an, the final and complete revelation."},
+  {q:"What do Muslims believe about the Day of Judgement (Akhirah)?", a:"After death, souls wait in Barzakh. On the Day of Judgement, all deeds are weighed. Those who followed Allah's will go to Jannah (paradise); those who didn't go to Jahannam (hell)."},
+  {q:"What is Al-Qadr (predestination) in Islam?", a:"The belief that Allah knows everything that will happen — He has complete knowledge and power over all. However, humans still have free will and moral responsibility for their choices."},
+  {q:"What is the difference between Sunni and Shia Muslims?", a:"The split occurred after the death of Prophet Muhammad over leadership. Sunni believe Abu Bakr was the rightful successor. Shia believe Ali (Muhammad's cousin and son-in-law) was the rightful leader."},
+  // Ethics: crime and punishment
+  {q:"What is the purpose of punishment according to religious views?", a:"Retribution (justice/deserved punishment), deterrence (stop others offending), reformation (changing behaviour), protection (keeping society safe), vindication (upholding the law). Religions often emphasise reform."},
+  {q:"What do Christians believe about the death penalty?", a:"Many oppose it, believing all life is sacred (sanctity of life) and that redemption is always possible. Some may support it citing 'an eye for an eye' (retribution). Most denominations now oppose it."},
+  {q:"What do Muslims believe about crime and punishment?", a:"Justice (Adl) is central. The Qur'an prescribes specific penalties (Hudud) for serious crimes. However, repentance, forgiveness and rehabilitation are also important. Sharia law aims to protect society."},
+  {q:"What is meant by the sanctity of life?", a:"The belief that life is sacred and God-given, and must not be taken away without justification. Central to debates about capital punishment, euthanasia, abortion, and war."},
+  // Ethics: peace and conflict
+  {q:"What is the Just War theory?", a:"A war is justified if: it is declared by a proper authority, fought for a just cause, is a last resort, has a reasonable chance of success, the means are proportional, and civilians are protected. Originates from Christian thinker St. Augustine."},
+  {q:"What do Christians believe about war and peace?", a:"Jesus taught 'blessed are the peacemakers.' Some Christians are pacifists (all war is wrong). Others accept the Just War theory. The Quakers are known for absolute pacifism."},
+  {q:"What do Muslims believe about war? What is Jihad?", a:"Jihad means 'struggle'. Greater Jihad: inner spiritual struggle to follow Allah. Lesser Jihad: physical struggle/defence of Islam. Islam allows defensive war under strict conditions (similar to Just War theory)."},
+  {q:"What is pacifism?", a:"The belief that all violence and war is morally wrong and that conflicts should be resolved peacefully. Quakers, some Buddhists and others hold pacifist views. Jesus' teaching 'turn the other cheek' supports it."},
+  // Ethics: relationships and families
+  {q:"What do Christians believe about marriage?", a:"Marriage is a sacred covenant between a man, a woman and God. It should be lifelong ('what God has joined, let no one separate'). Some denominations now accept same-sex marriage; others do not."},
+  {q:"What do Muslims believe about marriage and family?", a:"Marriage (Nikah) is a legal and spiritual contract. The family is central in Islam. Marriage is between a man and woman. Polygyny (up to 4 wives) is permitted under strict conditions. Family is a pillar of society."},
+  {q:"What are religious attitudes towards divorce?", a:"Catholic Christianity: marriage is permanent and indissoluble — divorce is not recognised (annulment may be granted). Protestant Christianity: divorce may be accepted with compassion. Islam: divorce is permitted but discouraged ('the most hateful of permitted things')."},
+  {q:"What are religious views on gender equality?", a:"Christianity: 'there is neither male nor female, for you are all one in Christ Jesus' (Galatians 3:28) — some churches ordain women; others don't. Islam: men and women are equal before Allah but have different roles; women have rights to property, education and consent."},
+  // Ethics: human rights
+  {q:"What is meant by human rights in an RE context?", a:"The basic rights and freedoms every person is entitled to regardless of religion, race or gender. The UN Declaration of Human Rights (1948) underpins secular human rights. Religious traditions generally support human dignity."},
+  {q:"What do Christians believe about the nature of human beings?", a:"Humans are made in the image of God ('Imago Dei') — this gives every person inherent dignity and value. This underpins Christian support for human rights, opposition to torture, and work for social justice."},
+  {q:"What is religious freedom and why is it important to religious people?", a:"The right to practise, change or express one's religion without interference. Christians and Muslims both see faith as central to identity. Many religious groups have historically suffered persecution for their beliefs."},
+  // Key terms
+  {q:"What is agnosticism and atheism?", a:"Atheism: the belief that God does not exist. Agnosticism: the belief that the existence of God is unknown or unknowable — neither belief nor disbelief. Theism: belief in the existence of God."},
+  {q:"What is meant by 'ultimate questions' in RS?", a:"Big questions that go beyond science: Does God exist? What is the purpose of life? What happens after death? Is there right and wrong? Religion, philosophy and ethics all try to answer these questions."},
+  {q:"What is meant by stewardship in religion?", a:"The responsibility to look after and care for the Earth on behalf of God. Genesis 2:15 says God placed humans in the garden 'to tend and keep it.' This underpins religious environmentalism and care for creation."},
+  {q:"What is the difference between absolute and relative morality?", a:"Absolute morality: rules that are always right or wrong regardless of context (e.g. Divine Command theory). Relative morality: what is right depends on the situation, culture or consequences (e.g. Situation Ethics)."},
+];
+
+let deck=[], masteredCards=[], current=0, isFlipped=false;
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+function init(){deck=shuffle([...allCards]);current=0;showCard();}
+function showCard(){
+  document.getElementById('card').classList.remove('flipped');isFlipped=false;
+  if(!deck.length){document.getElementById('mainArea').style.display='none';document.getElementById('doneMsg').style.display='block';updateProgress();return;}
+  document.getElementById('mainArea').style.display='block';document.getElementById('doneMsg').style.display='none';
+  document.getElementById('questionText').textContent=deck[current].q;
+  document.getElementById('answerText').textContent=deck[current].a;
+  document.getElementById('currentNum').textContent=current+1;
+  document.getElementById('totalNum').textContent=deck.length;
+  updateProgress();
+}
+function updateProgress(){document.getElementById('progressFill').style.width=(masteredCards.length/allCards.length*100)+'%';updateMasteredList();}
+function flipCard(){isFlipped=!isFlipped;document.getElementById('card').classList.toggle('flipped',isFlipped);}
+function navigate(dir){current=(current+dir+deck.length)%deck.length;showCard();}
+function shuffleCards(){shuffle(deck);current=0;showCard();}
+function markMastered(){if(!deck.length)return;masteredCards.push(deck.splice(current,1)[0]);if(current>=deck.length)current=Math.max(0,deck.length-1);showCard();}
+function resetAll(){masteredCards=[];deck=shuffle([...allCards]);current=0;document.getElementById('masteredList').style.display='none';showCard();}
+function updateMasteredList(){const list=document.getElementById('masteredList');if(!masteredCards.length){list.style.display='none';return;}list.style.display='block';document.getElementById('masteredItems').innerHTML=masteredCards.map(c=>`<div class="mastered-item">${c.q}</div>`).join('');}
+init();
+</script>
+</body>
+</html>
