@@ -18,34 +18,39 @@
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Syne', sans-serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2rem 1rem;
+    background: var(--bg); color: var(--text);
+    font-family: 'Syne', sans-serif; min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 2rem 1rem 3rem;
     background-image: radial-gradient(ellipse at 25% 25%, rgba(76,222,128,0.1) 0%, transparent 55%),
                       radial-gradient(ellipse at 75% 75%, rgba(168,255,90,0.07) 0%, transparent 55%);
   }
-  header { text-align: center; margin-bottom: 2.5rem; }
+  header { text-align: center; margin-bottom: 1.5rem; }
   .subject-tag { font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 0.25em; color: var(--accent); text-transform: uppercase; border: 1px solid var(--border); padding: 0.3rem 0.8rem; border-radius: 2px; display: inline-block; margin-bottom: 0.8rem; }
   h1 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
   .stats { font-family: 'Space Mono', monospace; font-size: 0.78rem; color: var(--muted); margin-top: 0.5rem; }
   .stats span { color: var(--accent); }
-  .scene { width: min(480px, 95vw); height: 280px; perspective: 1000px; cursor: pointer; margin-bottom: 2rem; }
+
+  /* Category bar */
+  .category-bar { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; width: min(600px, 95vw); margin-bottom: 1.5rem; }
+  .cat-btn { font-family: 'Space Mono', monospace; font-size: 0.62rem; letter-spacing: 0.07em; padding: 0.4rem 0.75rem; border-radius: 20px; cursor: pointer; border: 1px solid rgba(168,255,90,0.22); background: transparent; color: var(--muted); transition: all 0.2s; text-transform: uppercase; }
+  .cat-btn:hover { color: var(--accent); border-color: var(--accent); }
+  .cat-btn.active { background: rgba(168,255,90,0.13); color: var(--accent); border-color: var(--accent); }
+
+  .scene { width: min(500px, 95vw); height: 300px; perspective: 1000px; cursor: pointer; margin-bottom: 2rem; }
   .card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.55s cubic-bezier(.4,0,.2,1); }
   .card.flipped { transform: rotateY(180deg); }
-  .face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; border: 1px solid var(--border); }
+  .face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; border: 1px solid var(--border); overflow: hidden; }
   .front { background: var(--card-bg); background-image: linear-gradient(135deg, rgba(168,255,90,0.04), rgba(76,222,128,0.04)); }
   .back { background: linear-gradient(135deg, rgba(168,255,90,0.07), rgba(76,222,128,0.1)); transform: rotateY(180deg); border-color: rgba(168,255,90,0.3); }
   .face-label { font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; position: absolute; top: 1rem; left: 1.2rem; }
-  .question-text { font-size: clamp(1rem, 3vw, 1.25rem); font-weight: 600; line-height: 1.5; }
-  .answer-text { font-size: clamp(0.9rem, 2.5vw, 1.1rem); line-height: 1.6; color: #d4ffb0; }
+  .cat-tag { font-family: 'Space Mono', monospace; font-size: 0.58rem; letter-spacing: 0.1em; position: absolute; top: 1rem; right: 1.2rem; padding: 0.15rem 0.5rem; border-radius: 10px; text-transform: uppercase; background: rgba(168,255,90,0.1); color: var(--accent); border: 1px solid rgba(168,255,90,0.2); }
+  .question-text { font-size: clamp(0.95rem, 2.8vw, 1.2rem); font-weight: 600; line-height: 1.5; }
+  .answer-text { font-size: clamp(0.84rem, 2.3vw, 1rem); line-height: 1.75; color: #d4ffb0; overflow-y: auto; max-height: 210px; }
   .flip-hint { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--muted); position: absolute; bottom: 1rem; right: 1.2rem; }
-  .controls { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; width: min(480px, 95vw); margin-bottom: 2rem; }
-  button { font-family: 'Space Mono', monospace; font-size: 0.75rem; letter-spacing: 0.1em; border: none; border-radius: 8px; padding: 0.75rem 1.4rem; cursor: pointer; transition: all 0.2s; text-transform: uppercase; }
+
+  .controls { display: flex; gap: 0.8rem; flex-wrap: wrap; justify-content: center; width: min(500px, 95vw); margin-bottom: 2rem; }
+  button { font-family: 'Space Mono', monospace; font-size: 0.73rem; letter-spacing: 0.08em; border: none; border-radius: 8px; padding: 0.7rem 1.2rem; cursor: pointer; transition: all 0.2s; text-transform: uppercase; }
   .btn-shuffle { background: transparent; border: 1px solid var(--border); color: var(--accent); flex: 1; }
   .btn-shuffle:hover { background: rgba(168,255,90,0.07); }
   .btn-mastered { background: rgba(255,159,67,0.08); border: 1px solid rgba(255,159,67,0.25); color: var(--mastered); flex: 1; }
@@ -54,13 +59,14 @@
   .btn-nav:hover { background: rgba(76,222,128,0.2); }
   .btn-reset { background: transparent; border: 1px solid rgba(255,80,80,0.25); color: #ff8080; width: 100%; }
   .btn-reset:hover { background: rgba(255,80,80,0.08); }
-  .progress-bar { width: min(480px, 95vw); height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; margin-bottom: 1.5rem; overflow: hidden; }
+
+  .progress-bar { width: min(500px, 95vw); height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; margin-bottom: 1.5rem; overflow: hidden; }
   .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width 0.4s ease; }
-  .mastered-list { width: min(480px, 95vw); margin-top: 1rem; }
+  .mastered-list { width: min(500px, 95vw); margin-top: 1rem; }
   .mastered-list h3 { font-size: 0.7rem; letter-spacing: 0.2em; color: var(--mastered); font-family: 'Space Mono', monospace; text-transform: uppercase; margin-bottom: 0.8rem; }
   .mastered-item { font-size: 0.82rem; color: var(--muted); padding: 0.4rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center; gap: 0.5rem; }
   .mastered-item::before { content: '✓'; color: var(--mastered); font-size: 0.75rem; }
-  .done-msg { text-align: center; padding: 3rem 2rem; background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border); width: min(480px, 95vw); }
+  .done-msg { text-align: center; padding: 3rem 2rem; background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border); width: min(500px, 95vw); }
   .done-msg h2 { font-size: 1.8rem; color: var(--mastered); margin-bottom: 0.5rem; }
   .done-msg p { color: var(--muted); font-size: 0.9rem; }
 </style>
@@ -69,14 +75,29 @@
 <header>
   <div class="subject-tag">Year 10 · Summer Exams</div>
   <h1>🌿 Biology</h1>
-  <div class="stats">Card <span id="currentNum">1</span> of <span id="totalNum">1</span> remaining</div>
+  <div class="stats">Card <span id="currentNum">1</span> of <span id="totalNum">1</span> remaining · <span id="catLabel" style="color:var(--accent)">All Cards</span></div>
 </header>
+
 <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="category-bar">
+  <button class="cat-btn active" onclick="filterCat('all',this)">All</button>
+  <button class="cat-btn" onclick="filterCat('cells',this)">🔬 Cells</button>
+  <button class="cat-btn" onclick="filterCat('division',this)">🧬 Cell Division</button>
+  <button class="cat-btn" onclick="filterCat('organisation',this)">🫀 Organisation &amp; Digestion</button>
+  <button class="cat-btn" onclick="filterCat('animals_plants',this)">🌱 Animals &amp; Plants</button>
+  <button class="cat-btn" onclick="filterCat('transport',this)">💧 Cell Transport</button>
+  <button class="cat-btn" onclick="filterCat('communicable',this)">🦠 Communicable Diseases</button>
+  <button class="cat-btn" onclick="filterCat('noncommunicable',this)">❤️ Non-Communicable</button>
+  <button class="cat-btn" onclick="filterCat('photoresp',this)">☀️ Photosynthesis &amp; Respiration</button>
+</div>
+
 <div id="mainArea">
   <div class="scene" onclick="flipCard()">
     <div class="card" id="card">
-      <div class="face front">
+      <div class="face front" id="frontFace">
         <div class="face-label">Question</div>
+        <div class="cat-tag" id="catTag"></div>
         <div class="question-text" id="questionText"></div>
         <div class="flip-hint">click to reveal →</div>
       </div>
@@ -92,77 +113,228 @@
     <button class="btn-nav" onclick="navigate(1)">Next ▶</button>
     <button class="btn-shuffle" onclick="shuffleCards()">⇄ Shuffle</button>
     <button class="btn-mastered" onclick="markMastered()">✓ Mastered</button>
-    <button class="btn-reset" onclick="resetAll()">↺ Reset All Cards</button>
+    <button class="btn-reset" onclick="resetAll()">↺ Reset All</button>
   </div>
 </div>
 <div class="done-msg" id="doneMsg" style="display:none">
   <h2>🎉 All Mastered!</h2>
-  <p>You've mastered all Biology cards. Well done!</p>
+  <p>You've mastered all cards in this category. Well done!</p>
   <button class="btn-reset" style="margin-top:1rem" onclick="resetAll()">↺ Start Again</button>
 </div>
 <div class="mastered-list" id="masteredList" style="display:none">
   <h3>✓ Mastered Cards</h3>
   <div id="masteredItems"></div>
 </div>
+
 <script>
 const allCards = [
-  {q:"What are the seven life processes? (MRSGREN)", a:"Movement, Respiration, Sensitivity, Growth, Reproduction, Excretion, Nutrition. All living organisms carry out these processes."},
-  {q:"What is the structure of a cell? (plant vs animal)", a:"Both: nucleus, cytoplasm, cell membrane, mitochondria, ribosomes. Plant only: cell wall (cellulose), vacuole, chloroplasts."},
-  {q:"What is the function of the nucleus?", a:"Contains DNA and controls the activities of the cell, including cell division and protein synthesis."},
-  {q:"What is the function of mitochondria?", a:"Site of aerobic respiration — produces ATP (energy) for the cell. More mitochondria = more active cell."},
-  {q:"What is the function of chloroplasts?", a:"Site of photosynthesis in plant cells. Contains chlorophyll, which absorbs light energy to make glucose."},
-  {q:"What is diffusion?", a:"The net movement of particles from a region of higher concentration to lower concentration (down a concentration gradient). Passive — no energy needed."},
-  {q:"What is osmosis?", a:"The net movement of water molecules through a partially permeable membrane from a dilute solution to a more concentrated solution, down the water potential gradient."},
-  {q:"What is active transport?", a:"Movement of substances against a concentration gradient, using energy (ATP) from respiration. Requires carrier proteins."},
-  {q:"Write the equation for photosynthesis.", a:"Carbon dioxide + Water → Glucose + Oxygen. 6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂. Needs light energy and chlorophyll."},
-  {q:"What factors affect the rate of photosynthesis?", a:"Light intensity, carbon dioxide concentration, temperature, and water availability. Any of these can be a limiting factor."},
-  {q:"Write the equation for aerobic respiration.", a:"Glucose + Oxygen → Carbon dioxide + Water (+ energy as ATP). C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O. Occurs in mitochondria."},
-  {q:"What is anaerobic respiration in humans?", a:"Glucose → Lactic acid (+ small amount of energy). Occurs when oxygen is insufficient. Causes muscle fatigue and oxygen debt."},
-  {q:"What is the role of enzymes?", a:"Biological catalysts made of protein. Speed up chemical reactions in cells without being used up. Each enzyme has a specific active site."},
-  {q:"What is the lock and key model of enzyme action?", a:"The substrate fits into the enzyme's active site (like a key into a lock). If the shape changes (denaturation), the enzyme no longer works."},
-  {q:"What affects enzyme activity?", a:"Temperature (optimum ~37°C in humans — above this denatures), pH (each enzyme has an optimum pH), substrate concentration."},
-  {q:"What are the components of blood?", a:"Red blood cells (carry oxygen via haemoglobin), white blood cells (immune defence), platelets (clotting), plasma (liquid — carries nutrients, CO₂, hormones, waste)."},
-  {q:"What is the structure and function of the heart?", a:"A four-chambered muscular pump. Right side: receives deoxygenated blood, pumps to lungs. Left side: receives oxygenated blood, pumps to body. Valves prevent backflow."},
-  {q:"What is the difference between arteries, veins and capillaries?", a:"Arteries: thick walls, carry blood away from heart (high pressure). Veins: thin walls, valves, carry blood to heart. Capillaries: one cell thick, site of gas exchange."},
-  {q:"What is the structure of the lungs and how does gas exchange work?", a:"Alveoli: tiny air sacs with thin walls, moist, rich blood supply, large surface area. O₂ diffuses into blood; CO₂ diffuses out, down concentration gradients."},
-  {q:"What is the nervous system?", a:"The central nervous system (brain + spinal cord) and peripheral nerves. Detects stimuli via receptors, coordinates responses via effectors (muscles/glands)."},
-  {q:"What is a reflex arc?", a:"Stimulus → Receptor → Sensory neuron → Relay neuron (spinal cord) → Motor neuron → Effector → Response. Fast, involuntary and does not involve the brain."},
-  {q:"What is the endocrine system?", a:"A system of glands (e.g. pancreas, adrenal, thyroid, pituitary) that secrete hormones into the blood to regulate body functions. Slower but longer-lasting than nerve signals."},
-  {q:"How does the body regulate blood glucose?", a:"High glucose: pancreas secretes insulin → cells absorb glucose → levels fall. Low glucose: glucagon secreted → liver converts glycogen to glucose → levels rise."},
-  {q:"What is DNA and what does it do?", a:"Deoxyribonucleic acid — a double helix polymer of nucleotides. Carries genetic instructions for making proteins and is the basis of inheritance."},
-  {q:"What is the difference between mitosis and meiosis?", a:"Mitosis: produces 2 genetically identical diploid cells (for growth/repair). Meiosis: produces 4 genetically unique haploid cells (gametes for sexual reproduction)."},
-  {q:"What are dominant and recessive alleles?", a:"Dominant: always expressed even if only one copy is present. Recessive: only expressed when two copies are present (homozygous recessive). E.g. B (dominant), b (recessive)."},
-  {q:"What is natural selection?", a:"Individuals with advantageous inherited traits are more likely to survive and reproduce. Over many generations, beneficial alleles become more common in the population."},
-  {q:"What is the difference between a pathogen, a disease and a symptom?", a:"Pathogen: microorganism causing disease (bacterium, virus, fungus, protist). Disease: the condition caused. Symptom: what the patient experiences (e.g. fever, rash)."},
-  {q:"How do vaccines work?", a:"Contain dead/weakened pathogens or antigens. The immune system produces antibodies and memory cells. On future exposure, a faster, stronger response destroys the pathogen."},
-  {q:"What is the difference between bacteria and viruses?", a:"Bacteria: single-celled living organisms — can be treated with antibiotics. Viruses: non-living, replicate inside host cells — treated with antivirals, not antibiotics."},
-  {q:"What is the structure of a plant and its specialised cells?", a:"Root hair cells (large surface area for water/mineral absorption), xylem (water transport, dead cells), phloem (sugar transport, living cells), guard cells (control stomata)."},
-  {q:"What is transpiration?", a:"Loss of water vapour from plant leaves through stomata. Creates a 'pull' that draws water up through xylem. Rate increases with: temperature, light, wind, low humidity."},
-  {q:"What is a food chain and food web?", a:"Food chain: shows feeding relationships (producer → primary consumer → secondary consumer). Food web: multiple interconnected chains. Energy decreases at each trophic level (~10% transferred)."},
-  {q:"What is the carbon cycle?", a:"Carbon moves through the environment via photosynthesis (removes CO₂), respiration, decomposition, combustion, and ocean absorption. Maintains CO₂ balance in the atmosphere."},
-  {q:"What is homeostasis?", a:"The maintenance of a constant internal environment (e.g. body temperature ~37°C, blood glucose, water balance). Controlled by negative feedback mechanisms."},
+
+  // ══════════════════════════════════════════
+  // CELLS
+  // ══════════════════════════════════════════
+  {cat:"cells", q:"What are the seven life processes? (MRSGREN)", a:"Movement, Respiration, Sensitivity, Growth, Reproduction, Excretion, Nutrition. All living organisms carry out these seven processes."},
+  {cat:"cells", q:"What is the structure of an animal cell?", a:"Nucleus (controls cell, contains DNA), cytoplasm (site of chemical reactions), cell membrane (controls what enters/leaves), mitochondria (energy/ATP production), ribosomes (protein synthesis)."},
+  {cat:"cells", q:"What extra structures do plant cells have compared to animal cells?", a:"Cell wall (cellulose — gives support and shape), permanent vacuole (contains cell sap, maintains turgor), chloroplasts (site of photosynthesis, contain chlorophyll)."},
+  {cat:"cells", q:"What is the function of the nucleus?", a:"Contains DNA (in chromosomes) and controls the activities of the cell, including protein synthesis and cell division. Has a nuclear membrane with pores."},
+  {cat:"cells", q:"What is the function of the cell membrane?", a:"Controls what substances enter and leave the cell (partially permeable). Made of a phospholipid bilayer with embedded proteins. Site of cell signalling."},
+  {cat:"cells", q:"What is the function of mitochondria?", a:"Site of aerobic respiration — produces ATP (the cell's energy currency). The more active a cell, the more mitochondria it has (e.g. muscle cells, sperm cells)."},
+  {cat:"cells", q:"What is the function of ribosomes?", a:"Site of protein synthesis. Found in cytoplasm and on rough endoplasmic reticulum. They read mRNA and assemble amino acids into proteins."},
+  {cat:"cells", q:"What is the function of chloroplasts?", a:"Site of photosynthesis. Contain chlorophyll (green pigment) which absorbs light energy. Found only in plant cells and algae. Have their own DNA."},
+  {cat:"cells", q:"What is the function of the vacuole in plant cells?", a:"Permanent vacuole is filled with cell sap (water + dissolved substances). Keeps the cell turgid (firm). Important for maintaining cell shape and structure."},
+  {cat:"cells", q:"What is the difference between a prokaryotic and eukaryotic cell?", a:"Eukaryotic: has a true nucleus and membrane-bound organelles (e.g. animal and plant cells). Prokaryotic: no nucleus — DNA floats in cytoplasm; smaller; includes bacteria. No mitochondria in prokaryotes."},
+  {cat:"cells", q:"What are the features of a bacterial (prokaryotic) cell?", a:"Cell wall (not cellulose), cell membrane, cytoplasm, ribosomes (smaller than eukaryotic), circular DNA (no nucleus), may have plasmids, flagella, and slime capsule."},
+  {cat:"cells", q:"What is a specialised cell? Give two examples.", a:"A cell adapted for a specific function. Examples: red blood cells (biconcave shape, no nucleus, packed with haemoglobin for O₂ transport); root hair cells (long extension to increase surface area for water/mineral absorption)."},
+  {cat:"cells", q:"What is a stem cell?", a:"An undifferentiated cell that can divide and develop into many different cell types. Embryonic stem cells are pluripotent. Adult stem cells (e.g. in bone marrow) are more limited. Used in medical treatments."},
+  {cat:"cells", q:"How do you calculate magnification?", a:"Magnification = Image size ÷ Actual size. (I = M × A). If given a scale bar, use it to work out actual size. Units must match (convert nm to µm or µm to mm as needed)."},
+  {cat:"cells", q:"What is the difference between resolution and magnification?", a:"Magnification: how much larger an image appears. Resolution: the ability to distinguish two points as separate. Light microscopes: up to ×1500, resolution ~200 nm. Electron microscopes: up to ×2,000,000, resolution ~0.1 nm."},
+
+  // ══════════════════════════════════════════
+  // CELL DIVISION
+  // ══════════════════════════════════════════
+  {cat:"division", q:"What is mitosis and what is it used for?", a:"Mitosis is cell division that produces 2 genetically identical daughter cells, each with the same number of chromosomes as the parent (diploid). Used for: growth, repair, and asexual reproduction."},
+  {cat:"division", q:"What are the stages of the cell cycle?", a:"1. Interphase (cell grows, DNA replicates, organelles duplicate). 2. Mitosis (chromosomes separate): Prophase → Metaphase → Anaphase → Telophase. 3. Cytokinesis (cytoplasm divides). Result: 2 identical cells."},
+  {cat:"division", q:"What is meiosis and what is it used for?", a:"Meiosis produces 4 genetically unique haploid cells (gametes: sperm and egg cells). It halves the chromosome number from diploid (46) to haploid (23). Introduces genetic variation through crossing over and independent assortment."},
+  {cat:"division", q:"What is the difference between haploid and diploid?", a:"Diploid (2n): contains two sets of chromosomes — one from each parent. In humans: 46 chromosomes. Haploid (n): contains one set — 23 chromosomes. Gametes are haploid; body cells are diploid."},
+  {cat:"division", q:"What is DNA replication and when does it happen?", a:"DNA replication occurs during the S phase of interphase before cell division. The double helix unzips, and each strand acts as a template. Complementary bases pair up (A-T, C-G), producing two identical copies."},
+  {cat:"division", q:"What is the structure of a chromosome?", a:"A chromosome is a long molecule of DNA coiled around histone proteins. Humans have 46 chromosomes (23 pairs) in body cells. Each chromosome contains thousands of genes. Chromosomes come in homologous pairs."},
+  {cat:"division", q:"What is a gene and what does it do?", a:"A gene is a section of DNA on a chromosome that codes for the production of a specific protein. The sequence of bases determines the amino acid sequence. Each person has two copies (alleles) of each gene — one from each parent."},
+  {cat:"division", q:"What are dominant and recessive alleles?", a:"Dominant: expressed even if only one copy present (shown as capital letter, e.g. B). Recessive: only expressed when two copies present (bb). Heterozygous (Bb) = dominant phenotype. Homozygous recessive (bb) = recessive phenotype."},
+  {cat:"division", q:"What is the difference between genotype and phenotype?", a:"Genotype: the alleles an organism carries (e.g. Bb, BB, bb). Phenotype: the observable characteristic that results from the genotype and environment (e.g. brown eyes)."},
+  {cat:"division", q:"What is cancer and how does it relate to cell division?", a:"Cancer is when cells divide uncontrollably due to mutations in genes that control the cell cycle (e.g. tumour suppressor genes, proto-oncogenes). Results in a tumour. Caused by mutagens: radiation, chemicals, viruses."},
+  {cat:"division", q:"What is sexual vs asexual reproduction in terms of cell division?", a:"Sexual: involves meiosis to produce gametes; fertilisation gives genetic variation. Asexual: involves mitosis only; produces genetically identical offspring (clones). E.g. bacteria binary fission, plant runners, bulbs."},
+
+  // ══════════════════════════════════════════
+  // ORGANISATION & DIGESTION
+  // ══════════════════════════════════════════
+  {cat:"organisation", q:"What is the hierarchy of organisation in living organisms?", a:"Cell → Tissue → Organ → Organ System → Organism. Each level is more complex. E.g. muscle cells → muscle tissue → heart → cardiovascular system → human body."},
+  {cat:"organisation", q:"What is a tissue, an organ and an organ system?", a:"Tissue: group of similar cells working together (e.g. muscle tissue). Organ: group of different tissues working together (e.g. heart). Organ system: group of organs working together (e.g. digestive system)."},
+  {cat:"organisation", q:"What are the main parts of the digestive system and their functions?", a:"Mouth (chewing/amylase), oesophagus (peristalsis), stomach (protease/HCl/churning), small intestine (absorption), large intestine (water reabsorption), liver (bile production), pancreas (enzyme secretion)."},
+  {cat:"organisation", q:"What are enzymes and how do they work in digestion?", a:"Biological catalysts that break down large food molecules into smaller ones. Amylase: starch → sugars (mouth/pancreas). Protease: proteins → amino acids (stomach/pancreas). Lipase: fats → fatty acids + glycerol (pancreas/small intestine)."},
+  {cat:"organisation", q:"What is bile and what does it do?", a:"Bile is produced by the liver, stored in the gall bladder, and released into the small intestine. It emulsifies fats (breaks large fat droplets into smaller ones) increasing surface area for lipase. It also neutralises stomach acid."},
+  {cat:"organisation", q:"How is the small intestine adapted for absorption?", a:"Very long (6–7 m), covered in villi (finger-like projections), which have microvilli increasing surface area enormously. Rich blood supply for rapid transport. Thin walls (one cell thick) for short diffusion distance."},
+  {cat:"organisation", q:"What is peristalsis?", a:"Waves of muscular contractions in the walls of the digestive tract that push food along the gut. Circular muscles contract behind the food bolus; longitudinal muscles contract in front, moving it forward."},
+  {cat:"organisation", q:"What are the four main food groups and their uses in the body?", a:"Carbohydrates: energy source. Proteins: growth, repair, enzymes. Fats: energy store, insulation, cell membranes. Vitamins and minerals: various functions (e.g. vitamin C prevents scurvy, iron for haemoglobin)."},
+  {cat:"organisation", q:"What is the role of the liver in the body?", a:"Produces bile (for fat digestion), detoxifies alcohol and drugs, stores glycogen, produces heat, makes plasma proteins, breaks down excess amino acids (deamination → urea)."},
+  {cat:"organisation", q:"What are the main components of blood and their functions?", a:"Red blood cells: carry O₂ (haemoglobin, no nucleus, biconcave). White blood cells: immune defence (phagocytes engulf; lymphocytes make antibodies). Platelets: blood clotting. Plasma: liquid carrying nutrients, hormones, CO₂, urea, antibodies."},
+  {cat:"organisation", q:"What is the difference between arteries, veins and capillaries?", a:"Arteries: thick muscular walls, small lumen, carry blood away from heart at high pressure. Veins: thin walls, large lumen, valves, carry blood to heart at low pressure. Capillaries: one cell thick, site of exchange with tissues."},
+  {cat:"organisation", q:"What is the structure and function of the heart?", a:"Four-chambered muscular pump. Right side: receives deoxygenated blood from body, pumps to lungs. Left side: receives oxygenated blood from lungs, pumps to body. Valves prevent backflow. Has its own blood supply (coronary arteries)."},
+  {cat:"organisation", q:"What is coronary heart disease (CHD)?", a:"Coronary arteries become narrowed by fatty deposits (atherosclerosis/plaques), reducing blood flow to the heart muscle. Can cause angina or heart attack. Risk factors: high fat diet, smoking, lack of exercise, high blood pressure."},
+
+  // ══════════════════════════════════════════
+  // ORGANISING ANIMALS & PLANTS
+  // ══════════════════════════════════════════
+  {cat:"animals_plants", q:"What is the nervous system and how does it work?", a:"CNS (brain + spinal cord) + peripheral nervous system. Receptors detect stimuli → electrical impulses travel along sensory neurons → relay neurons in CNS → motor neurons → effectors (muscles/glands) produce a response."},
+  {cat:"animals_plants", q:"What is a reflex arc?", a:"A fast, automatic response to a stimulus that does not involve conscious thought. Pathway: Stimulus → Receptor → Sensory neuron → Relay neuron (spinal cord) → Motor neuron → Effector → Response."},
+  {cat:"animals_plants", q:"What are synapses?", a:"The gaps between neurons. Electrical impulse reaches the end of a neuron → neurotransmitter chemicals released → diffuse across the synapse → bind to receptors on the next neuron → trigger a new electrical impulse."},
+  {cat:"animals_plants", q:"What is the endocrine system?", a:"Network of glands that secrete hormones into the bloodstream. Slower but longer-lasting than nerve responses. Key glands: pituitary (master gland), thyroid, adrenal, pancreas, ovaries, testes."},
+  {cat:"animals_plants", q:"How does the body control blood glucose levels?", a:"High glucose: pancreas (beta cells) secretes insulin → cells take up glucose → blood glucose falls. Low glucose: pancreas (alpha cells) secretes glucagon → liver converts glycogen to glucose → blood glucose rises. Negative feedback."},
+  {cat:"animals_plants", q:"What is diabetes and how do Type 1 and Type 2 differ?", a:"Type 1: immune system destroys insulin-producing cells — no insulin made. Treated with insulin injections. Type 2: cells become resistant to insulin. Linked to obesity and poor diet. Managed with diet, exercise, medication."},
+  {cat:"animals_plants", q:"What is homeostasis?", a:"The maintenance of a stable internal environment despite external changes. Examples: body temperature (~37°C), blood glucose, water levels, CO₂ concentration. All controlled by negative feedback mechanisms."},
+  {cat:"animals_plants", q:"How does the body control temperature (thermoregulation)?", a:"Too hot: vasodilation (blood vessels widen), sweating (evaporation cools), hair lies flat. Too cold: vasoconstriction (vessels narrow), shivering (muscle contractions generate heat), hair erects (traps air). Controlled by hypothalamus."},
+  {cat:"animals_plants", q:"What is the menstrual cycle and which hormones control it?", a:"~28-day cycle. FSH (from pituitary): stimulates egg maturation. Oestrogen: rebuilds uterus lining, triggers LH surge. LH: triggers ovulation. Progesterone: maintains uterus lining. If no fertilisation, progesterone drops → menstruation."},
+  {cat:"animals_plants", q:"What are the main plant hormones and their functions?", a:"Auxins: promote cell elongation in shoots (phototropism — shoot bends toward light as auxin moves to shaded side). Gibberellins: promote seed germination and stem elongation. Ethylene: promotes fruit ripening."},
+  {cat:"animals_plants", q:"What is phototropism and gravitropism in plants?", a:"Phototropism: shoots grow towards light (positive phototropism) due to uneven distribution of auxin. Gravitropism (geotropism): roots grow downwards (positive) in response to gravity; shoots grow upwards (negative)."},
+  {cat:"animals_plants", q:"What is the structure of the lungs and how does gas exchange occur?", a:"Air enters via trachea → bronchi → bronchioles → alveoli. Alveoli: large surface area, one cell thick, moist, rich capillary network. O₂ diffuses into blood; CO₂ diffuses out — both move down concentration gradients."},
+
+  // ══════════════════════════════════════════
+  // CELL STRUCTURE & TRANSPORT (PLANTS)
+  // ══════════════════════════════════════════
+  {cat:"transport", q:"What is diffusion?", a:"The net movement of particles from a region of higher concentration to lower concentration, down the concentration gradient. Passive — no energy needed. Rate increases with: greater concentration gradient, higher temperature, larger surface area, shorter distance."},
+  {cat:"transport", q:"What is osmosis?", a:"The net movement of water molecules through a partially permeable membrane from an area of higher water potential (dilute solution) to lower water potential (concentrated solution). Passive process — no energy required."},
+  {cat:"transport", q:"What is active transport?", a:"Movement of substances against the concentration gradient (from low to high concentration). Requires energy (ATP) from respiration and specific carrier proteins. E.g. absorption of glucose and minerals in the small intestine and roots."},
+  {cat:"transport", q:"What happens to plant cells in different water concentrations?", a:"Hypotonic (dilute) solution: water enters by osmosis → cell becomes turgid (firm, swells). Hypertonic (concentrated) solution: water leaves → cell becomes flaccid, then plasmolysed (membrane pulls away from cell wall)."},
+  {cat:"transport", q:"What is turgidity and why is it important in plants?", a:"Turgid cells are full of water and press against the cell wall, making the plant firm and upright. Important for structural support in non-woody plants. Loss of turgidity causes wilting."},
+  {cat:"transport", q:"What are the functions of xylem and phloem?", a:"Xylem: transports water and dissolved minerals from roots to leaves. Dead cells with no end walls — forms a continuous tube. Movement: transpiration pull. Phloem: transports dissolved sugars (sucrose) from leaves to rest of plant (translocation). Living cells."},
+  {cat:"transport", q:"What is transpiration?", a:"Evaporation of water vapour from leaves through stomata. Creates a tension that pulls water up through xylem from roots. Rate increases with: higher temperature, higher light intensity, increased wind speed, lower humidity."},
+  {cat:"transport", q:"What is the transpiration stream?", a:"Continuous movement of water from roots → xylem → leaves → evaporation through stomata. Driven by transpiration pull. Minerals dissolved in water are carried along passively."},
+  {cat:"transport", q:"What are stomata and guard cells?", a:"Stomata: pores in the leaf surface allowing gas exchange (CO₂ in, O₂ out) and water vapour to escape. Guard cells: surround each stoma and control opening/closing. When turgid → stoma opens. When flaccid → stoma closes (e.g. at night)."},
+  {cat:"transport", q:"How is a root hair cell adapted for absorption?", a:"Long, thin extension into soil → greatly increases surface area for water and mineral absorption. Thin cell wall and membrane for rapid diffusion. Mitochondria present for active transport of minerals against concentration gradient."},
+  {cat:"transport", q:"What is translocation in plants?", a:"Transport of dissolved sugars (sucrose) and other organic molecules through phloem, from source (leaves where photosynthesis occurs) to sink (roots, fruits, growing regions). Requires energy — an active process."},
+  {cat:"transport", q:"What factors affect the rate of diffusion?", a:"1. Concentration gradient (steeper = faster). 2. Temperature (higher = faster, more kinetic energy). 3. Surface area (larger = faster). 4. Diffusion distance (shorter = faster). 5. Size of molecule (smaller = faster)."},
+
+  // ══════════════════════════════════════════
+  // COMMUNICABLE DISEASES
+  // ══════════════════════════════════════════
+  {cat:"communicable", q:"What is a communicable (infectious) disease?", a:"A disease caused by a pathogen (microorganism) that can be passed from one organism to another. Types of pathogen: bacteria, viruses, fungi, protists. Spread by: direct contact, droplets, contaminated water/food, vectors."},
+  {cat:"communicable", q:"What is the difference between bacteria and viruses as pathogens?", a:"Bacteria: living, single-celled prokaryotes that can reproduce independently and produce toxins. Treated with antibiotics. Viruses: non-living, replicate inside host cells, destroying them. Treated with antivirals. Antibiotics do NOT work on viruses."},
+  {cat:"communicable", q:"What diseases are caused by bacteria?", a:"Salmonella (food poisoning — symptoms: fever, vomiting, diarrhoea), Gonorrhoea (STI — thick yellow discharge, pain), tuberculosis (TB — spread by droplets, damage to lungs). All treatable with antibiotics."},
+  {cat:"communicable", q:"What diseases are caused by viruses?", a:"Measles (rash, fever, complications — prevented by MMR vaccine), HIV/AIDS (destroys white blood cells → immune failure), influenza (flu), TMV (tobacco mosaic virus — mosaic pattern on leaves, stunts plant growth)."},
+  {cat:"communicable", q:"What diseases are caused by fungi and protists?", a:"Fungi: rose black spot (black spots on rose leaves, spread by water/wind). Protists: malaria (caused by Plasmodium, spread by Anopheles mosquito — the vector). Malaria symptoms: fever, chills, sweating; can be fatal."},
+  {cat:"communicable", q:"How does the body defend itself against pathogens? (non-specific)", a:"Physical barriers: skin (barrier + sebum), mucus (traps pathogens), cilia (sweep mucus away), stomach acid (kills pathogens). Non-specific immune response: phagocytes engulf and digest pathogens (phagocytosis)."},
+  {cat:"communicable", q:"How does the immune system fight pathogens? (specific)", a:"Lymphocytes produce specific antibodies that bind to antigens on pathogens, neutralising them or marking for destruction. Memory cells remain, enabling a faster response on re-infection. This is the basis of immunity."},
+  {cat:"communicable", q:"What are antibodies and antigens?", a:"Antigens: proteins on the surface of pathogens that trigger an immune response. Antibodies: proteins produced by lymphocytes that are complementary in shape to a specific antigen. Each antibody is specific to one antigen."},
+  {cat:"communicable", q:"How do vaccines work?", a:"Introduce dead/weakened pathogens or their antigens into the body. The immune system produces antibodies and memory cells without causing disease. If exposed to the real pathogen later, memory cells mount a rapid response."},
+  {cat:"communicable", q:"What is herd immunity?", a:"When a large proportion of a population is immune to a disease (through vaccination or previous infection), the spread of the pathogen is limited — even unvaccinated individuals are protected. Requires a high enough vaccination rate (varies by disease)."},
+  {cat:"communicable", q:"What are antibiotics and why is antibiotic resistance a problem?", a:"Antibiotics kill or inhibit the growth of bacteria. They have no effect on viruses. Antibiotic resistance: bacteria evolve mutations that make them resistant. Overuse/misuse of antibiotics speeds up natural selection for resistant strains (e.g. MRSA)."},
+  {cat:"communicable", q:"How can the spread of communicable diseases be reduced?", a:"Vaccination programmes, hygiene measures (handwashing), safe sex (contraception), clean water supplies, vector control (e.g. mosquito nets for malaria), quarantine, food hygiene/cooking, antibiotics where appropriate."},
+
+  // ══════════════════════════════════════════
+  // NON-COMMUNICABLE DISEASES
+  // ══════════════════════════════════════════
+  {cat:"noncommunicable", q:"What is a non-communicable disease?", a:"A disease that cannot be passed between organisms — it is not caused by a pathogen. Often caused by lifestyle factors, genetics, or environmental exposure. Examples: cancer, heart disease, Type 2 diabetes, asthma."},
+  {cat:"noncommunicable", q:"What are the main risk factors for non-communicable diseases?", a:"Lifestyle: smoking, alcohol, poor diet (high fat/sugar/salt), lack of exercise, obesity. Environmental: air pollution, UV radiation. Genetic: family history, inherited mutations. Risk factors increase probability but do not guarantee disease."},
+  {cat:"noncommunicable", q:"What is cancer and what causes it?", a:"Uncontrolled cell division caused by mutations in genes that regulate the cell cycle (oncogenes/tumour suppressor genes). Benign tumours: contained, don't spread. Malignant: invade other tissues (metastasis). Causes: UV, smoking, viruses, ionising radiation."},
+  {cat:"noncommunicable", q:"What is cardiovascular disease (CVD) and what causes it?", a:"Disease of the heart and blood vessels. Atherosclerosis: fatty plaques (atheroma) build up in artery walls → narrowing → reduced blood flow → angina, heart attack, stroke. Risk factors: smoking, high cholesterol, high blood pressure, obesity, inactivity."},
+  {cat:"noncommunicable", q:"What is the effect of smoking on the body?", a:"Nicotine: addictive, increases heart rate and blood pressure. Carbon monoxide: binds to haemoglobin, reducing O₂ transport. Tar: carcinogen, causes lung cancer. Irritants: damage cilia → mucus builds up → bronchitis/emphysema."},
+  {cat:"noncommunicable", q:"What is the effect of alcohol on the body?", a:"Liver damage (cirrhosis) from long-term use. Brain damage — affects coordination, reaction time, judgment. During pregnancy: foetal alcohol syndrome (affects brain development). Linked to certain cancers (liver, mouth, breast)."},
+  {cat:"noncommunicable", q:"What is the effect of obesity on health?", a:"Increases risk of: Type 2 diabetes, cardiovascular disease, high blood pressure, some cancers, joint problems, sleep apnoea. Obesity is defined as BMI ≥ 30. Caused by excess calorie intake relative to energy expenditure."},
+  {cat:"noncommunicable", q:"What is the link between diet and non-communicable disease?", a:"High saturated fat → raises LDL cholesterol → atherosclerosis. High salt → high blood pressure. High sugar → obesity, Type 2 diabetes. Low fibre → bowel cancer risk. Low fruit/vegetables → vitamin deficiencies, increased cancer risk."},
+  {cat:"noncommunicable", q:"How can non-communicable diseases be prevented?", a:"Healthy balanced diet, regular physical activity, not smoking, limiting alcohol, maintaining healthy weight, reducing stress. At a population level: public health campaigns, legislation (e.g. sugar tax, smoking bans), screening programmes."},
+  {cat:"noncommunicable", q:"What treatments exist for cardiovascular disease?", a:"Lifestyle changes (diet, exercise). Medication: statins (lower cholesterol), antihypertensives (lower blood pressure), aspirin (reduces clotting). Surgical: stents (widen arteries), bypass surgery (graft replaces blocked artery), heart transplant."},
+  {cat:"noncommunicable", q:"What is the difference between correlation and causation in health data?", a:"Correlation: two factors appear linked (e.g. smoking and lung cancer rates rise together). Causation: one factor directly causes the other. A correlation does not prove causation — other variables may be involved. Large, repeated studies are needed to establish causation."},
+
+  // ══════════════════════════════════════════
+  // PHOTOSYNTHESIS & RESPIRATION
+  // ══════════════════════════════════════════
+  {cat:"photoresp", q:"Write the word equation and symbol equation for photosynthesis.", a:"Carbon dioxide + Water → Glucose + Oxygen.\n6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂.\nRequires: light energy, chlorophyll. Occurs in chloroplasts. Endothermic process — absorbs light energy."},
+  {cat:"photoresp", q:"What are the two stages of photosynthesis?", a:"1. Light-dependent reactions (in thylakoid membranes): light splits water (photolysis) → O₂ released, ATP and NADPH produced. 2. Light-independent reactions / Calvin cycle (in stroma): CO₂ fixed using ATP and NADPH → glucose produced."},
+  {cat:"photoresp", q:"What factors limit the rate of photosynthesis?", a:"Light intensity (more light = faster, up to a point), CO₂ concentration (more CO₂ = faster), temperature (higher = faster up to optimum ~25°C, then enzymes denature), water availability. The slowest factor is the limiting factor at any given time."},
+  {cat:"photoresp", q:"How is a leaf adapted for photosynthesis?", a:"Broad, flat blade (large surface area for light absorption). Transparent epidermis (light reaches mesophyll). Palisade mesophyll (packed with chloroplasts near surface). Stomata (CO₂ in, O₂ out). Vascular bundles (water supply via xylem, glucose away via phloem)."},
+  {cat:"photoresp", q:"What is the role of chlorophyll?", a:"Green pigment found in chloroplasts. Absorbs red and blue light for photosynthesis, reflects green light (why leaves appear green). Transfers light energy to chemical energy to drive the reactions of photosynthesis."},
+  {cat:"photoresp", q:"How do plants use glucose produced in photosynthesis?", a:"Respiration (energy), converted to starch for storage, converted to cellulose for cell walls, converted to sucrose for transport, used to make amino acids (with nitrate ions) for proteins, converted to lipids for storage in seeds."},
+  {cat:"photoresp", q:"Write the word equation and symbol equation for aerobic respiration.", a:"Glucose + Oxygen → Carbon dioxide + Water (+ ATP energy).\nC₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O.\nOccurs in mitochondria. Exothermic — releases energy for life processes."},
+  {cat:"photoresp", q:"What is anaerobic respiration in animals?", a:"Glucose → Lactic acid (+ small amount of ATP). Occurs when O₂ is insufficient (e.g. intense exercise). Lactic acid causes muscle fatigue and pain. Repaid via oxygen debt: lactic acid is oxidised back to CO₂ and water using extra O₂ after exercise."},
+  {cat:"photoresp", q:"What is anaerobic respiration in plants and yeast?", a:"Glucose → Ethanol + Carbon dioxide (+ small amount of ATP). Called fermentation. Used in brewing (ethanol) and bread-making (CO₂ makes dough rise). Yeast is a fungus used commercially for fermentation."},
+  {cat:"photoresp", q:"What is the difference between aerobic and anaerobic respiration?", a:"Aerobic: uses O₂, produces CO₂ + H₂O, releases much more energy (36–38 ATP). Anaerobic: no O₂, produces lactic acid (animals) or ethanol + CO₂ (yeast/plants), releases very little energy (2 ATP). Aerobic is far more efficient."},
+  {cat:"photoresp", q:"What is ATP and why is it important?", a:"ATP (adenosine triphosphate) is the cell's energy currency. Made during respiration. Used to power: muscle contraction, active transport, protein synthesis, cell division, maintaining body temperature. Provides immediate, usable energy."},
+  {cat:"photoresp", q:"How does exercise affect the rate of respiration?", a:"Muscles need more ATP → respiration rate increases → more O₂ and glucose needed → heart rate increases (faster delivery), breathing rate/depth increases (more O₂ in, more CO₂ out). If O₂ insufficient → anaerobic respiration → lactic acid buildup."},
+  {cat:"photoresp", q:"What is the compensation point in plants?", a:"The light intensity at which the rate of photosynthesis exactly equals the rate of respiration — so no net gas exchange occurs. Above this: net photosynthesis (plant gains organic material). Below this: plant uses up more than it makes."},
+  {cat:"photoresp", q:"How do you investigate the rate of photosynthesis experimentally?", a:"Use aquatic plant (e.g. Elodea): count O₂ bubbles per minute or collect gas and measure volume. Vary: light intensity (change distance of lamp), CO₂ concentration (add NaHCO₃), temperature (water bath). Control other variables each time."},
 ];
 
-let deck=[], masteredCards=[], current=0, isFlipped=false;
-function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
-function init(){deck=shuffle([...allCards]);current=0;showCard();}
-function showCard(){
-  document.getElementById('card').classList.remove('flipped');isFlipped=false;
-  if(!deck.length){document.getElementById('mainArea').style.display='none';document.getElementById('doneMsg').style.display='block';updateProgress();return;}
-  document.getElementById('mainArea').style.display='block';document.getElementById('doneMsg').style.display='none';
-  document.getElementById('questionText').textContent=deck[current].q;
-  document.getElementById('answerText').textContent=deck[current].a;
-  document.getElementById('currentNum').textContent=current+1;
-  document.getElementById('totalNum').textContent=deck.length;
+// ══════════════════════════════════════════
+//  FLASHCARD LOGIC
+// ══════════════════════════════════════════
+const catLabels = {
+  all:'All Cards', cells:'🔬 Cells', division:'🧬 Cell Division',
+  organisation:'🫀 Organisation & Digestion', animals_plants:'🌱 Animals & Plants',
+  transport:'💧 Cell Transport', communicable:'🦠 Communicable Diseases',
+  noncommunicable:'❤️ Non-Communicable Diseases', photoresp:'☀️ Photosynthesis & Respiration'
+};
+
+let currentCat = 'all';
+let deck = [], masteredCards = [], current = 0, isFlipped = false;
+
+function shuffle(arr) {
+  for (let i=arr.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]; }
+  return arr;
+}
+function getPool() {
+  return currentCat === 'all' ? [...allCards] : allCards.filter(c => c.cat === currentCat);
+}
+function filterCat(cat, btn) {
+  currentCat = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  masteredCards = [];
+  deck = shuffle(getPool());
+  current = 0;
+  document.getElementById('masteredList').style.display = 'none';
+  document.getElementById('catLabel').textContent = catLabels[cat] || cat;
+  showCard();
+}
+function init() { deck = shuffle(getPool()); current = 0; showCard(); }
+function showCard() {
+  document.getElementById('card').classList.remove('flipped'); isFlipped = false;
+  if (!deck.length) {
+    document.getElementById('mainArea').style.display = 'none';
+    document.getElementById('doneMsg').style.display = 'block';
+    updateProgress(); return;
+  }
+  document.getElementById('mainArea').style.display = 'block';
+  document.getElementById('doneMsg').style.display = 'none';
+  const c = deck[current];
+  document.getElementById('questionText').textContent = c.q;
+  document.getElementById('answerText').textContent = c.a;
+  document.getElementById('currentNum').textContent = current + 1;
+  document.getElementById('totalNum').textContent = deck.length;
+  document.getElementById('catTag').textContent = catLabels[c.cat] || c.cat;
   updateProgress();
 }
-function updateProgress(){document.getElementById('progressFill').style.width=(masteredCards.length/allCards.length*100)+'%';updateMasteredList();}
-function flipCard(){isFlipped=!isFlipped;document.getElementById('card').classList.toggle('flipped',isFlipped);}
-function navigate(dir){current=(current+dir+deck.length)%deck.length;showCard();}
-function shuffleCards(){shuffle(deck);current=0;showCard();}
-function markMastered(){if(!deck.length)return;masteredCards.push(deck.splice(current,1)[0]);if(current>=deck.length)current=Math.max(0,deck.length-1);showCard();}
-function resetAll(){masteredCards=[];deck=shuffle([...allCards]);current=0;document.getElementById('masteredList').style.display='none';showCard();}
-function updateMasteredList(){const list=document.getElementById('masteredList');if(!masteredCards.length){list.style.display='none';return;}list.style.display='block';document.getElementById('masteredItems').innerHTML=masteredCards.map(c=>`<div class="mastered-item">${c.q}</div>`).join('');}
+function updateProgress() {
+  const total = getPool().length;
+  document.getElementById('progressFill').style.width = (total ? masteredCards.length / total * 100 : 0) + '%';
+  updateMasteredList();
+}
+function flipCard() { isFlipped = !isFlipped; document.getElementById('card').classList.toggle('flipped', isFlipped); }
+function navigate(dir) { current = (current + dir + deck.length) % deck.length; showCard(); }
+function shuffleCards() { shuffle(deck); current = 0; showCard(); }
+function markMastered() {
+  if (!deck.length) return;
+  masteredCards.push(deck.splice(current, 1)[0]);
+  if (current >= deck.length) current = Math.max(0, deck.length - 1);
+  showCard();
+}
+function resetAll() {
+  masteredCards = []; deck = shuffle(getPool()); current = 0;
+  document.getElementById('masteredList').style.display = 'none'; showCard();
+}
+function updateMasteredList() {
+  const list = document.getElementById('masteredList');
+  if (!masteredCards.length) { list.style.display = 'none'; return; }
+  list.style.display = 'block';
+  document.getElementById('masteredItems').innerHTML = masteredCards.map(c => `<div class="mastered-item">${c.q}</div>`).join('');
+}
 init();
 </script>
 </body>

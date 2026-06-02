@@ -15,6 +15,8 @@
     --muted: #7d6a56;
     --mastered: #a8d8ea;
     --border: rgba(255,179,71,0.2);
+    --acc-card: #c084fc;
+    --acc-card2: #818cf8;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   body {
@@ -25,27 +27,51 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 2rem 1rem;
+    padding: 2rem 1rem 3rem;
     background-image: radial-gradient(ellipse at 20% 20%, rgba(255,107,53,0.1) 0%, transparent 55%),
                       radial-gradient(ellipse at 80% 80%, rgba(255,179,71,0.08) 0%, transparent 55%);
   }
-  header { text-align: center; margin-bottom: 2.5rem; }
+  header { text-align: center; margin-bottom: 1.5rem; }
   .subject-tag { font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 0.25em; color: var(--accent); text-transform: uppercase; border: 1px solid var(--border); padding: 0.3rem 0.8rem; border-radius: 2px; display: inline-block; margin-bottom: 0.8rem; }
   h1 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 900; font-family: 'Playfair Display', serif; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
   .stats { font-family: 'Space Mono', monospace; font-size: 0.78rem; color: var(--muted); margin-top: 0.5rem; }
   .stats span { color: var(--accent); }
-  .scene { width: min(480px, 95vw); height: 300px; perspective: 1000px; cursor: pointer; margin-bottom: 2rem; }
+
+  /* Category filter */
+  .category-bar {
+    display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center;
+    width: min(560px, 95vw); margin-bottom: 1.5rem;
+  }
+  .cat-btn {
+    font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.08em;
+    padding: 0.4rem 0.8rem; border-radius: 20px; cursor: pointer;
+    border: 1px solid rgba(255,179,71,0.25); background: transparent;
+    color: var(--muted); transition: all 0.2s; text-transform: uppercase;
+  }
+  .cat-btn:hover { color: var(--accent); border-color: var(--accent); }
+  .cat-btn.active { background: rgba(255,179,71,0.15); color: var(--accent); border-color: var(--accent); }
+  .cat-btn.acc { border-color: rgba(192,132,252,0.35); color: #c084fc; }
+  .cat-btn.acc:hover, .cat-btn.acc.active { background: rgba(192,132,252,0.15); border-color: #c084fc; color: #e9d5ff; }
+
+  .scene { width: min(500px, 95vw); height: 300px; perspective: 1000px; cursor: pointer; margin-bottom: 2rem; }
   .card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.55s cubic-bezier(.4,0,.2,1); }
   .card.flipped { transform: rotateY(180deg); }
-  .face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; border: 1px solid var(--border); }
+  .face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; border: 1px solid var(--border); overflow: hidden; }
   .front { background: var(--card-bg); background-image: linear-gradient(135deg, rgba(255,179,71,0.04), rgba(255,107,53,0.04)); }
   .back { background: linear-gradient(135deg, rgba(255,179,71,0.07), rgba(255,107,53,0.1)); transform: rotateY(180deg); border-color: rgba(255,179,71,0.35); }
+  .front.acc-theme { background-image: linear-gradient(135deg, rgba(192,132,252,0.07), rgba(129,140,248,0.07)); border-color: rgba(192,132,252,0.3); }
+  .back.acc-theme { background: linear-gradient(135deg, rgba(192,132,252,0.1), rgba(129,140,248,0.15)); border-color: rgba(192,132,252,0.4); }
+
   .face-label { font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; position: absolute; top: 1rem; left: 1.2rem; }
-  .question-text { font-family: 'Playfair Display', serif; font-size: clamp(1rem, 3vw, 1.2rem); font-weight: 700; line-height: 1.5; }
-  .answer-text { font-size: clamp(0.88rem, 2.5vw, 1.05rem); line-height: 1.7; color: #ffe8c0; }
+  .cat-tag { font-family: 'Space Mono', monospace; font-size: 0.6rem; letter-spacing: 0.12em; position: absolute; top: 1rem; right: 1.2rem; padding: 0.15rem 0.5rem; border-radius: 10px; text-transform: uppercase; background: rgba(255,179,71,0.12); color: var(--accent); border: 1px solid rgba(255,179,71,0.2); }
+  .cat-tag.acc { background: rgba(192,132,252,0.15); color: #c084fc; border-color: rgba(192,132,252,0.3); }
+  .question-text { font-family: 'Playfair Display', serif; font-size: clamp(0.95rem, 2.8vw, 1.15rem); font-weight: 700; line-height: 1.5; }
+  .answer-text { font-size: clamp(0.84rem, 2.3vw, 1rem); line-height: 1.75; color: #ffe8c0; overflow-y: auto; max-height: 200px; }
+  .answer-text.acc { color: #e9d5ff; }
   .flip-hint { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--muted); position: absolute; bottom: 1rem; right: 1.2rem; }
-  .controls { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; width: min(480px, 95vw); margin-bottom: 2rem; }
-  button { font-family: 'Space Mono', monospace; font-size: 0.75rem; letter-spacing: 0.1em; border: none; border-radius: 8px; padding: 0.75rem 1.4rem; cursor: pointer; transition: all 0.2s; text-transform: uppercase; }
+
+  .controls { display: flex; gap: 0.8rem; flex-wrap: wrap; justify-content: center; width: min(500px, 95vw); margin-bottom: 2rem; }
+  button { font-family: 'Space Mono', monospace; font-size: 0.73rem; letter-spacing: 0.08em; border: none; border-radius: 8px; padding: 0.7rem 1.2rem; cursor: pointer; transition: all 0.2s; text-transform: uppercase; }
   .btn-shuffle { background: transparent; border: 1px solid var(--border); color: var(--accent); flex: 1; }
   .btn-shuffle:hover { background: rgba(255,179,71,0.07); }
   .btn-mastered { background: rgba(168,216,234,0.08); border: 1px solid rgba(168,216,234,0.25); color: var(--mastered); flex: 1; }
@@ -54,33 +80,48 @@
   .btn-nav:hover { background: rgba(255,107,53,0.2); }
   .btn-reset { background: transparent; border: 1px solid rgba(255,80,80,0.25); color: #ff8080; width: 100%; }
   .btn-reset:hover { background: rgba(255,80,80,0.08); }
-  .progress-bar { width: min(480px, 95vw); height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; margin-bottom: 1.5rem; overflow: hidden; }
+
+  .progress-bar { width: min(500px, 95vw); height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; margin-bottom: 1.5rem; overflow: hidden; }
   .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 2px; transition: width 0.4s ease; }
-  .mastered-list { width: min(480px, 95vw); margin-top: 1rem; }
+  .mastered-list { width: min(500px, 95vw); margin-top: 1rem; }
   .mastered-list h3 { font-size: 0.7rem; letter-spacing: 0.2em; color: var(--mastered); font-family: 'Space Mono', monospace; text-transform: uppercase; margin-bottom: 0.8rem; }
   .mastered-item { font-size: 0.82rem; color: var(--muted); padding: 0.4rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center; gap: 0.5rem; }
   .mastered-item::before { content: '✓'; color: var(--mastered); font-size: 0.75rem; }
-  .done-msg { text-align: center; padding: 3rem 2rem; background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border); width: min(480px, 95vw); }
+  .done-msg { text-align: center; padding: 3rem 2rem; background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border); width: min(500px, 95vw); }
   .done-msg h2 { font-size: 1.8rem; color: var(--mastered); margin-bottom: 0.5rem; font-family: 'Playfair Display', serif; }
   .done-msg p { color: var(--muted); font-size: 0.9rem; }
+
 </style>
 </head>
 <body>
 <header>
   <div class="subject-tag">Year 10 · Summer Exams</div>
   <h1>📖 English</h1>
-  <div class="stats">Card <span id="currentNum">1</span> of <span id="totalNum">1</span> remaining</div>
+  <div class="stats">Card <span id="currentNum">1</span> of <span id="totalNum">1</span> remaining · <span id="catLabel" style="color:var(--accent)">All Cards</span></div>
 </header>
+
 <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<!-- Category bar -->
+<div class="category-bar">
+  <button class="cat-btn active" onclick="filterCat('all')">All</button>
+  <button class="cat-btn acc" onclick="filterCat('acc')">🎄 A Christmas Carol</button>
+  <button class="cat-btn" onclick="filterCat('techniques')">Techniques</button>
+  <button class="cat-btn" onclick="filterCat('structure')">Structure</button>
+  <button class="cat-btn" onclick="filterCat('language')">Lang Paper</button>
+  <button class="cat-btn" onclick="filterCat('context')">Themes</button>
+</div>
+
 <div id="mainArea">
   <div class="scene" onclick="flipCard()">
     <div class="card" id="card">
-      <div class="face front">
+      <div class="face front" id="frontFace">
         <div class="face-label">Question</div>
+        <div class="cat-tag" id="catTagFront"></div>
         <div class="question-text" id="questionText"></div>
         <div class="flip-hint">click to reveal →</div>
       </div>
-      <div class="face back">
+      <div class="face back" id="backFace">
         <div class="face-label">Answer</div>
         <div class="answer-text" id="answerText"></div>
         <div class="flip-hint">click to flip back</div>
@@ -92,80 +133,193 @@
     <button class="btn-nav" onclick="navigate(1)">Next ▶</button>
     <button class="btn-shuffle" onclick="shuffleCards()">⇄ Shuffle</button>
     <button class="btn-mastered" onclick="markMastered()">✓ Mastered</button>
-    <button class="btn-reset" onclick="resetAll()">↺ Reset All Cards</button>
+    <button class="btn-reset" onclick="resetAll()">↺ Reset All</button>
   </div>
 </div>
 <div class="done-msg" id="doneMsg" style="display:none">
   <h2>All Mastered!</h2>
-  <p>You've mastered all English cards. Excellent work!</p>
+  <p>You've mastered all cards in this category.</p>
   <button class="btn-reset" style="margin-top:1rem" onclick="resetAll()">↺ Start Again</button>
 </div>
 <div class="mastered-list" id="masteredList" style="display:none">
   <h3>✓ Mastered Cards</h3>
   <div id="masteredItems"></div>
 </div>
+
+
 <script>
+// ═══════════════════════════════════════════
+//  CARD DATA
+// ═══════════════════════════════════════════
 const allCards = [
-  // Literary techniques
-  {q:"What is a metaphor?", a:"A direct comparison between two things, stating one thing IS another. E.g. 'The world is a stage.' Unlike a simile, it doesn't use 'like' or 'as'."},
-  {q:"What is a simile?", a:"A comparison using 'like' or 'as'. E.g. 'She was as cold as ice.' Creates vivid imagery by comparing two different things."},
-  {q:"What is personification?", a:"Giving human qualities to non-human things or abstract ideas. E.g. 'The wind whispered through the trees.'"},
-  {q:"What is alliteration?", a:"The repetition of the same consonant sound at the start of closely placed words. E.g. 'Peter Piper picked.' Creates rhythm and draws attention."},
-  {q:"What is sibilance?", a:"A form of alliteration using repeated 's' sounds to create a soft, hissing effect. E.g. 'The serpent slid silently.' Often creates a sinister or gentle mood."},
-  {q:"What is onomatopoeia?", a:"A word that sounds like what it describes. E.g. 'Bang', 'hiss', 'crash', 'sizzle'. Makes writing more vivid and sensory."},
-  {q:"What is imagery?", a:"Descriptive language that appeals to the senses (sight, sound, smell, taste, touch) to create a mental picture or sensory experience for the reader."},
-  {q:"What is symbolism?", a:"When an object, person, place or event represents something beyond its literal meaning. E.g. a dove symbolises peace; darkness symbolises evil or the unknown."},
-  {q:"What is foreshadowing?", a:"Hints or clues in the text that suggest future events. Builds tension, suspense and dramatic irony for the reader."},
-  {q:"What is dramatic irony?", a:"When the audience/reader knows something that a character does not. Creates tension, humour or pathos. E.g. the audience knows the killer is behind the door."},
-  {q:"What is a rhetorical question?", a:"A question asked for effect, not expecting an answer. Engages the reader, makes them think, and emphasises a point. E.g. 'Who wouldn't want to live in peace?'"},
-  {q:"What is anaphora?", a:"Repetition of a word or phrase at the beginning of successive clauses or sentences. E.g. 'We shall fight on the beaches, we shall fight on the seas...' Builds rhythm and emphasis."},
-  {q:"What is a motif?", a:"A recurring element (image, symbol, idea or phrase) that appears throughout a text and develops or reinforces a theme. E.g. blood in Macbeth as a motif of guilt."},
-  {q:"What is irony?", a:"A contrast between what is expected and what actually happens, or when words mean the opposite of their literal meaning. Types: verbal, situational, dramatic."},
-  {q:"What is pathetic fallacy?", a:"Giving human emotions to nature or the weather to reflect a character's feelings or the mood of a scene. E.g. a storm during a violent scene."},
-  {q:"What is juxtaposition?", a:"Placing two contrasting ideas, characters, images or settings close together to highlight the differences between them. E.g. light and dark, rich and poor."},
-  {q:"What is an oxymoron?", a:"A phrase combining two contradictory terms for effect. E.g. 'bittersweet', 'deafening silence', 'living death'. Creates tension or complexity."},
-  {q:"What is hyperbole?", a:"Deliberate exaggeration for effect, not meant to be taken literally. E.g. 'I've told you a million times.' Emphasises emotion or humour."},
-  {q:"What is enjambment?", a:"In poetry, when a sentence or phrase runs on to the next line without a pause. Creates a sense of momentum, urgency or breathlessness."},
-  {q:"What is a caesura?", a:"A pause in the middle of a line of poetry, often shown by punctuation (comma, full stop). Slows the pace and can create emphasis or a reflective mood."},
-  // Structure & form
-  {q:"What is the effect of a first-person narrator?", a:"Creates an intimate, subjective perspective — we only see what they see. Builds empathy but also unreliability. The reader is close to the character's thoughts and feelings."},
-  {q:"What is the effect of a third-person omniscient narrator?", a:"The narrator knows all characters' thoughts and feelings. Creates an objective, god-like viewpoint. Allows a wider perspective and can create dramatic irony."},
-  {q:"What is the structure of a Shakespearean sonnet?", a:"14 lines: three quatrains (ABAB CDCD EFEF) and a rhyming couplet (GG). Iambic pentameter. The volta (turn) usually occurs at the couplet or line 9."},
-  {q:"What is the difference between a soliloquy and a monologue?", a:"Soliloquy: a character speaks alone on stage — reveals private thoughts to the audience. Monologue: a long speech by one character to others, or alone, but broader than a soliloquy."},
-  // AQA English Language
-  {q:"What is the PEED/PEAL structure for analysis paragraphs?", a:"Point (make a point) → Evidence (quote from text) → Explain/Analysis (explain language/effect) → Development/Link (explore further, link to theme or context)."},
-  {q:"What should you consider when analysing language? (AQA)", a:"Word choice (connotations), literary devices, sentence structure (long/short), tone, viewpoint, and the effect on the reader. Always link to purpose and audience."},
-  {q:"What is the difference between explicit and implicit information?", a:"Explicit: directly stated in the text. Implicit: suggested or implied — you must infer meaning from clues in the text. AQA Paper 1 tests both."},
-  {q:"What techniques make writing effective for AQA Paper 1 Section B?", a:"Structural variety, varied sentence lengths, ambitious vocabulary, a range of literary techniques (metaphor, imagery, etc.), a clear narrative voice, and engaging the reader from the opening."},
-  {q:"What are the key features of a persuasive speech?", a:"Rhetorical questions, anaphora (repetition), direct address ('you'), statistics, emotive language, rule of three, counter-argument, expert opinion, call to action."},
-  {q:"What is the purpose of a newspaper article?", a:"To inform, sometimes persuade. Features: headline, subheading, byline, columns, quotes from experts/witnesses, formal language, inverted pyramid structure (most important info first)."},
-  // Context/themes
-  {q:"What are common themes in GCSE English Literature?", a:"Power and conflict, love and loss, identity, social class, prejudice, war, isolation, ambition, fate vs free will, good vs evil. Always link quotations to themes."},
-  {q:"What is the importance of context in literature analysis?", a:"Historical, social and biographical context shapes the writer's choices and meaning. AQA rewards understanding of when and why a text was written (up to 6 marks on some questions)."},
-  {q:"What is semantic field?", a:"A group of words in a text that are all related to the same topic or idea. E.g. a semantic field of war: 'battle', 'wound', 'cannon', 'defeat'. Reinforces theme and mood."},
-  {q:"What is tone in English?", a:"The overall attitude or feeling conveyed by the writer's language choices. E.g. melancholic, optimistic, bitter, satirical, sinister. Tone can shift during a text."},
+  // ── A CHRISTMAS CAROL ──────────────────────────────────────
+  // Context
+  {cat:"acc", q:"[CONTEXT] When was A Christmas Carol written and why?", a:"Published 1843 by Charles Dickens. Written in response to the suffering of the poor during the Industrial Revolution. Dickens visited a Ragged School in 1843 and was horrified by child poverty — he wrote the novella to shame the wealthy into action."},
+  {cat:"acc", q:"[CONTEXT] What was the 'Condition of England' question?", a:"A Victorian debate about the gap between the rich and poor caused by rapid industrialisation. Factory owners grew wealthy while workers lived in squalor. Dickens used the novella to challenge the attitude that the poor only had themselves to blame."},
+  {cat:"acc", q:"[CONTEXT] What was Malthusian thinking and how does Dickens challenge it?", a:"Thomas Malthus argued the poor were responsible for their own suffering and that charity made things worse. Scrooge echoes this with 'decrease the surplus population'. Dickens challenges this by showing poverty is caused by society, not the poor themselves."},
+  {cat:"acc", q:"[CONTEXT] What is the significance of the Poor Law of 1834?", a:"The Poor Law forced poor people into workhouses — grim, prison-like institutions. Dickens hated the workhouse system. Scrooge references it approvingly early on, showing his inhumanity. Dickens uses him to critique those who supported such cruel policies."},
+  {cat:"acc", q:"[CONTEXT] What is the significance of Christmas in Victorian England?", a:"Christmas was being revived as a family-centred festival in the 1840s (partly due to Prince Albert's German traditions). Dickens helped shape the modern Christmas. The novella argues Christmas should celebrate generosity and human connection, not just religion."},
+  {cat:"acc", q:"[CONTEXT] What is the form and structure of A Christmas Carol?", a:"A novella (short novel) divided into 5 staves (not chapters) — 'stave' is a musical term, suggesting the story is like a song or carol. It follows a circular structure: Scrooge begins isolated and ends redeemed. The three ghosts create a clear before/after transformation arc."},
+  // Themes
+  {cat:"acc", q:"[THEME] What does A Christmas Carol say about the theme of poverty?", a:"Dickens presents poverty as a social injustice caused by the greed of the wealthy, not the fault of the poor. The Cratchit family are shown as morally rich despite their material poverty. Ignorance and Want (the children beneath the Ghost of Christmas Present) symbolise the danger of neglecting the poor."},
+  {cat:"acc", q:"[THEME] What does the novella say about redemption and transformation?", a:"Redemption is the central theme. Scrooge transforms from a miser who embodies greed to a generous, joyful man. Dickens suggests anyone can change — there is always hope. The supernatural framework (the ghosts) enables this transformation."},
+  {cat:"acc", q:"[THEME] What does the novella say about the theme of Christmas and generosity?", a:"Dickens presents Christmas as a time for human connection, charity and warmth. Fred represents the true Christmas spirit. Scrooge's rejection of Christmas at the start signals his moral failure. By the end, he embraces it fully — symbolising moral rebirth."},
+  {cat:"acc", q:"[THEME] What does the novella say about family?", a:"The Cratchit family, despite poverty, are shown as loving and supportive — contrasted with Scrooge's isolated life. Fred's warm Christmas gathering shows the value of family. Scrooge's lonely childhood (Belle's rejection) explains but doesn't excuse his coldness."},
+  {cat:"acc", q:"[THEME] What is the theme of time in A Christmas Carol?", a:"The three ghosts represent past, present and future. Dickens suggests the past shapes us but need not define us; the present is what matters morally; and the future can be changed by our actions now. Scrooge is given the rare gift of seeing what his life will become."},
+  {cat:"acc", q:"[THEME] What does the novella say about social responsibility?", a:"Dickens argues that the wealthy have a duty to help the poor. The businessmen who ignore Scrooge's death and the Portly Gentlemen asking for charity both represent this theme. Marley's chains symbolise the consequences of selfishness — a moral debt owed to humanity."},
+  // Characters
+  {cat:"acc", q:"[CHARACTER] How is Ebenezer Scrooge presented at the start?", a:"Scrooge is presented as the embodiment of greed and cold-heartedness. Dickens uses an extended metaphor of cold ('cold in head, cold in heart') and animal imagery ('grasping, scraping, clutching covetous old sinner'). He rejects charity, warmth and human connection entirely."},
+  {cat:"acc", q:"[CHARACTER] How does Scrooge change by the end of the novella?", a:"Scrooge becomes generous, joyful and socially responsible. He raises Bob's salary, buys the prize turkey, donates to charity and joins Fred's Christmas. Dickens presents his transformation as complete and sincere — shown through his laughter, dancing and childlike joy."},
+  {cat:"acc", q:"[CHARACTER] What is the role of Jacob Marley?", a:"Marley is Scrooge's dead business partner who appears as a ghost in Stave 1. His chains — 'forged in life' from 'cash-boxes, keys, padlocks' — symbolise the spiritual consequences of greed. He is a warning of what Scrooge will become if he doesn't change."},
+  {cat:"acc", q:"[CHARACTER] How is Bob Cratchit presented?", a:"Bob is presented as loyal, humble and loving despite his poverty. He toasts Scrooge despite his cruelty, showing his goodness. He represents the dignified poor whom Scrooge exploits. His love for Tiny Tim highlights the humanity Scrooge lacks."},
+  {cat:"acc", q:"[CHARACTER] What is the role of Tiny Tim?", a:"Tiny Tim is Bob's disabled son who symbolises the innocent poor threatened by the greed of people like Scrooge. His line 'God bless us, every one' reflects the Christmas spirit of universal goodwill. His potential death in the future motivates Scrooge's redemption."},
+  {cat:"acc", q:"[CHARACTER] How is Fred presented in the novella?", a:"Fred is Scrooge's cheerful, generous nephew who embodies the true spirit of Christmas. His persistence in inviting Scrooge to dinner despite rejection shows warmth and forgiveness. He contrasts sharply with Scrooge — same family, opposite values."},
+  {cat:"acc", q:"[CHARACTER] What do Ignorance and Want represent?", a:"Two ragged, hollow-eyed children hidden under the Ghost of Christmas Present's robes. Ignorance represents the uneducated poor; Want represents poverty. The Ghost warns: 'Beware them both, but most of all beware this boy [Ignorance].' Dickens argues ignorance is the greatest danger to society."},
+  // Key Quotes
+  {cat:"acc", q:"[QUOTE] 'Mankind was my business...' — who says this and what does it mean?", a:"Said by Marley's Ghost (Stave 1). He means that his true duty was to care for other people, not to accumulate wealth. The quote conveys Dickens' central moral message: social responsibility matters more than money. Marley's regret warns Scrooge — and the reader."},
+  {cat:"acc", q:"[QUOTE] 'Are there no prisons? Are there no workhouses?' — analyse this.", a:"Said by Scrooge in Stave 1 when asked for a charitable donation. The rhetorical questions show his callousness and his defence of Victorian poor law institutions. Dickens uses Scrooge's words to expose — and condemn — the attitude of the Victorian ruling class."},
+  {cat:"acc", q:"[QUOTE] 'I wear the chain I forged in life' — analyse this.", a:"Said by Marley's Ghost. The metaphor of chains links greed with spiritual imprisonment. 'Forged' suggests deliberate construction — his selfishness was a choice. The image is visceral and terrifying, functioning as a warning to both Scrooge and the reader about the cost of greed."},
+  {cat:"acc", q:"[QUOTE] 'Decrease the surplus population' — what is the significance?", a:"Said by Scrooge in Stave 1, echoing Malthusian ideas that the poor were a burden. Dickens uses Scrooge's own words to convict him when the Ghost of Christmas Present throws the phrase back at him in Stave 3 — a dramatic moment of moral confrontation."},
+  {cat:"acc", q:"[QUOTE] 'God bless us, every one!' — analyse this.", a:"Said by Tiny Tim at the Cratchits' Christmas dinner. The inclusive 'every one' reflects universal goodwill. As the most vulnerable character, his blessing carries great moral weight. Dickens uses the child's voice to embody the Christmas spirit of compassion and community."},
+  {cat:"acc", q:"[QUOTE] 'I am as light as a feather, I am as happy as an angel' — analyse this.", a:"Said by Scrooge after waking on Christmas morning (Stave 5). The similes show his complete transformation. The contrast with his earlier cold imagery is striking. 'Light' suggests both happiness and the lifting of a moral burden. His joy reads as a kind of spiritual rebirth."},
+  {cat:"acc", q:"[QUOTE] 'Old Scrooge squeezed, wrenched, grasped, scraped, clutched...'", a:"Narrator in Stave 1. The list of verbs with violent, physical connotations presents Scrooge as predatory and aggressive in his greed. The piling-up (syndeton) mirrors the relentlessness of his avarice. Dickens makes the reader feel the harm greed does."},
+  {cat:"acc", q:"[QUOTE] 'His wealth is of no use to him' — who says this?", a:"Said by Fred about Scrooge (Stave 1). It is both literally true and ironically so — Scrooge hoards money but gains no joy from it. Fred's perspective offers the reader a moral compass early in the novella: happiness matters more than wealth."},
+  // Terminology
+  {cat:"acc", q:"[TERMINOLOGY] What is a novella and why did Dickens use this form?", a:"A novella is a short novel — longer than a short story, shorter than a full novel. Dickens chose the form so it could be sold cheaply (6 shillings) to reach a wide audience including the middle classes he wanted to persuade. Its brevity gives it the impact of a single moral argument."},
+  {cat:"acc", q:"[TERMINOLOGY] What is the significance of calling the chapters 'Staves'?", a:"A stave is a line of music or a verse of a carol. Calling chapters 'staves' links the novella to the idea of a Christmas carol — joyful, communal, moral. It signals from the start that this is a story about celebration and transformation, not just darkness."},
+  {cat:"acc", q:"[TERMINOLOGY] What literary technique is used in Scrooge's name?", a:"Scrooge is an example of a Dickensian name (also called an aptronym) — the name sounds like what the character is. 'Scrooge' sounds like 'screw' and 'squeeze', suggesting his tight-fisted, grasping nature. His name entered the English language as a synonym for miser."},
+  {cat:"acc", q:"[TERMINOLOGY] What is the narrative perspective in A Christmas Carol?", a:"Third-person omniscient narrator with a strong authorial voice. Dickens frequently addresses the reader directly ('Mind! I don't mean...'), creating intimacy and allowing him to guide our moral judgements. The narrator is clearly on the side of the poor and against Scrooge's values."},
+  {cat:"acc", q:"[TERMINOLOGY] What is the role of the supernatural in the novella?", a:"The ghosts function as a plot device enabling Scrooge's transformation. They also represent abstract concepts: the past (memory and regret), the present (reality and empathy), and the future (consequence and warning). The supernatural makes visible what is normally invisible — the moral impact of our choices."},
+  {cat:"acc", q:"[TERMINOLOGY] What is pathetic fallacy in A Christmas Carol?", a:"Dickens opens with fog, cold and darkness to reflect Scrooge's moral state ('the fog and frost hung about the black old gateway'). As Scrooge transforms, warmth and light imagery increases. The weather mirrors and reinforces Scrooge's inner journey throughout the novella."},
+  {cat:"acc", q:"[TERMINOLOGY] What is Dickens' use of juxtaposition in the novella?", a:"Dickens constantly contrasts rich and poor (Scrooge's counting house vs the Cratchits' home), cold and warmth, darkness and light, isolation and community. These contrasts highlight the injustice of Victorian society and reinforce the novella's moral argument about the need for generosity."},
+
+  // ── LITERARY TECHNIQUES ──────────────────────
+  {cat:"techniques", q:"What is a metaphor?", a:"A direct comparison between two things, stating one thing IS another. E.g. 'The world is a stage.' Unlike a simile, it doesn't use 'like' or 'as'."},
+  {cat:"techniques", q:"What is a simile?", a:"A comparison using 'like' or 'as'. E.g. 'She was as cold as ice.' Creates vivid imagery by comparing two different things."},
+  {cat:"techniques", q:"What is personification?", a:"Giving human qualities to non-human things or abstract ideas. E.g. 'The wind whispered through the trees.'"},
+  {cat:"techniques", q:"What is alliteration?", a:"The repetition of the same consonant sound at the start of closely placed words. E.g. 'Peter Piper picked.' Creates rhythm and draws attention."},
+  {cat:"techniques", q:"What is sibilance?", a:"A form of alliteration using repeated 's' sounds. E.g. 'The serpent slid silently.' Often creates a sinister or gentle mood."},
+  {cat:"techniques", q:"What is onomatopoeia?", a:"A word that sounds like what it describes. E.g. 'Bang', 'hiss', 'crash'. Makes writing more vivid and sensory."},
+  {cat:"techniques", q:"What is imagery?", a:"Descriptive language that appeals to the senses to create a mental picture or sensory experience for the reader."},
+  {cat:"techniques", q:"What is symbolism?", a:"When an object, person, place or event represents something beyond its literal meaning. E.g. a dove symbolises peace."},
+  {cat:"techniques", q:"What is foreshadowing?", a:"Hints or clues that suggest future events. Builds tension, suspense and dramatic irony."},
+  {cat:"techniques", q:"What is dramatic irony?", a:"When the audience/reader knows something a character does not. Creates tension, humour or pathos."},
+  {cat:"techniques", q:"What is a rhetorical question?", a:"A question asked for effect, not expecting an answer. Engages the reader and emphasises a point."},
+  {cat:"techniques", q:"What is anaphora?", a:"Repetition of a word or phrase at the beginning of successive clauses. E.g. 'We shall fight... we shall fight...' Builds rhythm and emphasis."},
+  {cat:"techniques", q:"What is a motif?", a:"A recurring element (image, symbol, idea) throughout a text that develops or reinforces a theme."},
+  {cat:"techniques", q:"What is irony?", a:"A contrast between what is expected and what happens, or words meaning the opposite of their literal sense."},
+  {cat:"techniques", q:"What is pathetic fallacy?", a:"Giving human emotions to nature or weather to reflect a character's feelings or the mood of a scene."},
+  {cat:"techniques", q:"What is juxtaposition?", a:"Placing two contrasting ideas or images close together to highlight the differences between them."},
+  {cat:"techniques", q:"What is an oxymoron?", a:"A phrase combining two contradictory terms. E.g. 'bittersweet', 'deafening silence'. Creates tension or complexity."},
+  {cat:"techniques", q:"What is hyperbole?", a:"Deliberate exaggeration for effect. E.g. 'I've told you a million times.' Emphasises emotion or humour."},
+  {cat:"techniques", q:"What is semantic field?", a:"A group of words all related to the same topic/idea. E.g. a semantic field of war: 'battle', 'wound', 'cannon'. Reinforces theme and mood."},
+  // ── STRUCTURE & FORM ────────────────────────
+  {cat:"structure", q:"What is the effect of a first-person narrator?", a:"Creates an intimate, subjective perspective. Builds empathy but also unreliability. The reader is close to the character's thoughts."},
+  {cat:"structure", q:"What is the effect of a third-person omniscient narrator?", a:"The narrator knows all characters' thoughts. Creates a god-like viewpoint, wider perspective, and can create dramatic irony."},
+  {cat:"structure", q:"What is the structure of a Shakespearean sonnet?", a:"14 lines: three quatrains (ABAB CDCD EFEF) and a rhyming couplet (GG). Iambic pentameter. The volta usually occurs at line 9 or the couplet."},
+  {cat:"structure", q:"What is the difference between a soliloquy and a monologue?", a:"Soliloquy: character speaks alone on stage — reveals private thoughts to the audience. Monologue: a long speech by one character to others."},
+  {cat:"structure", q:"What is enjambment?", a:"When a sentence runs on to the next line without a pause. Creates momentum, urgency or breathlessness."},
+  {cat:"structure", q:"What is a caesura?", a:"A pause in the middle of a line of poetry, often shown by punctuation. Slows pace and can create emphasis or a reflective mood."},
+  // ── AQA LANGUAGE PAPER ──────────────────────
+  {cat:"language", q:"What is the PEED/PEAL structure?", a:"Point → Evidence (quote) → Explain/Analysis (language effect) → Development/Link (explore further, link to theme or context)."},
+  {cat:"language", q:"What should you consider when analysing language? (AQA)", a:"Word choice (connotations), literary devices, sentence structure, tone, viewpoint, and the effect on the reader. Always link to purpose and audience."},
+  {cat:"language", q:"What is the difference between explicit and implicit information?", a:"Explicit: directly stated. Implicit: suggested or implied — you must infer meaning from clues. AQA Paper 1 tests both."},
+  {cat:"language", q:"What techniques make writing effective for AQA Paper 1 Section B?", a:"Structural variety, varied sentence lengths, ambitious vocabulary, literary techniques, a clear narrative voice, and engaging openings."},
+  {cat:"language", q:"What are the key features of a persuasive speech?", a:"Rhetorical questions, anaphora, direct address ('you'), statistics, emotive language, rule of three, counter-argument, call to action."},
+  {cat:"language", q:"What is the purpose of a newspaper article?", a:"To inform, sometimes persuade. Features: headline, subheading, byline, quotes, formal language, inverted pyramid structure (most important info first)."},
+  // ── THEMES & CONTEXT ──────────────────────
+  {cat:"context", q:"What are common themes in GCSE English Literature?", a:"Power and conflict, love and loss, identity, social class, prejudice, war, isolation, ambition, fate vs free will, good vs evil."},
+  {cat:"context", q:"What is the importance of context in literature analysis?", a:"Historical, social and biographical context shapes the writer's choices and meaning. AQA rewards understanding of when and why a text was written."},
+  {cat:"context", q:"What is tone in English?", a:"The overall attitude or feeling conveyed by the writer's language choices. E.g. melancholic, optimistic, bitter, satirical, sinister. Tone can shift during a text."},
 ];
 
-let deck=[], masteredCards=[], current=0, isFlipped=false;
-function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
-function init(){deck=shuffle([...allCards]);current=0;showCard();}
-function showCard(){
-  document.getElementById('card').classList.remove('flipped');isFlipped=false;
-  if(!deck.length){document.getElementById('mainArea').style.display='none';document.getElementById('doneMsg').style.display='block';updateProgress();return;}
-  document.getElementById('mainArea').style.display='block';document.getElementById('doneMsg').style.display='none';
-  document.getElementById('questionText').textContent=deck[current].q;
-  document.getElementById('answerText').textContent=deck[current].a;
-  document.getElementById('currentNum').textContent=current+1;
-  document.getElementById('totalNum').textContent=deck.length;
+// ═══════════════════════════════════════════
+//  FLASHCARD LOGIC
+// ═══════════════════════════════════════════
+let currentCat = 'all';
+let deck = [], masteredCards = [], current = 0, isFlipped = false;
+
+function shuffle(arr) {
+  for (let i=arr.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]; }
+  return arr;
+}
+
+function getPool() {
+  if (currentCat === 'all') return [...allCards];
+  return allCards.filter(c => c.cat === currentCat);
+}
+
+function filterCat(cat) {
+  currentCat = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  masteredCards = [];
+  deck = shuffle(getPool());
+  current = 0;
+  document.getElementById('masteredList').style.display = 'none';
+  const labels = {all:'All Cards', acc:'A Christmas Carol', techniques:'Techniques', structure:'Structure & Form', language:'Language Paper', context:'Themes & Context'};
+  document.getElementById('catLabel').textContent = labels[cat] || cat;
+  showCard();
+}
+
+function init() { deck = shuffle(getPool()); current = 0; showCard(); }
+
+function showCard() {
+  const cardEl = document.getElementById('card');
+  cardEl.classList.remove('flipped'); isFlipped = false;
+  if (!deck.length) {
+    document.getElementById('mainArea').style.display='none';
+    document.getElementById('doneMsg').style.display='block';
+    updateProgress(); return;
+  }
+  document.getElementById('mainArea').style.display='block';
+  document.getElementById('doneMsg').style.display='none';
+  const c = deck[current];
+  document.getElementById('questionText').textContent = c.q;
+  document.getElementById('answerText').textContent = c.a;
+  document.getElementById('currentNum').textContent = current+1;
+  document.getElementById('totalNum').textContent = deck.length;
+  // Theming
+  const isAcc = c.cat === 'acc';
+  const frontFace = document.getElementById('frontFace');
+  const backFace = document.getElementById('backFace');
+  const answerEl = document.getElementById('answerText');
+  const catTag = document.getElementById('catTagFront');
+  frontFace.classList.toggle('acc-theme', isAcc);
+  backFace.classList.toggle('acc-theme', isAcc);
+  answerEl.classList.toggle('acc', isAcc);
+  catTag.classList.toggle('acc', isAcc);
+  const tagLabels = {acc:'🎄 A Christmas Carol', techniques:'Technique', structure:'Structure', language:'Lang Paper', context:'Themes'};
+  catTag.textContent = tagLabels[c.cat] || c.cat;
   updateProgress();
 }
-function updateProgress(){document.getElementById('progressFill').style.width=(masteredCards.length/allCards.length*100)+'%';updateMasteredList();}
-function flipCard(){isFlipped=!isFlipped;document.getElementById('card').classList.toggle('flipped',isFlipped);}
-function navigate(dir){current=(current+dir+deck.length)%deck.length;showCard();}
-function shuffleCards(){shuffle(deck);current=0;showCard();}
-function markMastered(){if(!deck.length)return;masteredCards.push(deck.splice(current,1)[0]);if(current>=deck.length)current=Math.max(0,deck.length-1);showCard();}
-function resetAll(){masteredCards=[];deck=shuffle([...allCards]);current=0;document.getElementById('masteredList').style.display='none';showCard();}
-function updateMasteredList(){const list=document.getElementById('masteredList');if(!masteredCards.length){list.style.display='none';return;}list.style.display='block';document.getElementById('masteredItems').innerHTML=masteredCards.map(c=>`<div class="mastered-item">${c.q}</div>`).join('');}
+
+function updateProgress() {
+  const total = getPool().length;
+  const pct = total ? (masteredCards.length / total * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  updateMasteredList();
+}
+function flipCard() { isFlipped=!isFlipped; document.getElementById('card').classList.toggle('flipped',isFlipped); }
+function navigate(dir) { current=(current+dir+deck.length)%deck.length; showCard(); }
+function shuffleCards() { shuffle(deck); current=0; showCard(); }
+function markMastered() {
+  if (!deck.length) return;
+  masteredCards.push(deck.splice(current,1)[0]);
+  if (current>=deck.length) current=Math.max(0,deck.length-1);
+  showCard();
+}
+function resetAll() {
+  masteredCards=[]; deck=shuffle(getPool()); current=0;
+  document.getElementById('masteredList').style.display='none'; showCard();
+}
+function updateMasteredList() {
+  const list=document.getElementById('masteredList');
+  if (!masteredCards.length){list.style.display='none';return;}
+  list.style.display='block';
+  document.getElementById('masteredItems').innerHTML=masteredCards.map(c=>`<div class="mastered-item">${c.q}</div>`).join('');
+}
+
 init();
 </script>
 </body>
